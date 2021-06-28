@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34; xmlns:th="http://www.thymeleaf.org">
+
+<!--导航条-->
+<nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar"
+     th:fragment="header-nav">
+    <div class="container">
+        <a class="navbar-brand"
+           href="/">&nbsp;<strong>lin1874's space</strong>&nbsp;</a>
+
+        <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="animated-icon"><span></span><span></span><span></span></div>
+        </button>
+
+        <!--  -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto text-center">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/blog}">
+                        <i class="iconfont icon-home-fill"></i>
+                        首页
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/blog/archives}">
+                        <i class="iconfont icon-archive-fill"></i>
+                        归档
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/blog/categories}">
+                        <i class="iconfont icon-category-fill"></i>
+                        分类
+                    </a>
+                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" th:href="@{/blog/tags}">-->
+<!--                        <i class="iconfont icon-tags-fill"></i>-->
+<!--                        标签-->
+<!--                    </a>-->
+<!--                </li>-->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/blog/links}">
+                        <i class="iconfont icon-link-fill"></i>
+                        友链
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/blog/about}">
+                        <i class="iconfont icon-user-fill"></i>
+                        关于
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--导航条结束-->
+
+
+</html>

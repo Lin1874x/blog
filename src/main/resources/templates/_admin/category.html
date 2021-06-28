@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='分类管理',active='category'">
+<header th:replace="_admin/header::headerFragment"></header>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="_admin/header::header-body(${active})"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">分类/标签管理</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-color panel-primary">
+                            <div class="panel-heading">
+                                <h1 class="panel-title">分类列表</h1>
+                            </div>
+                            <div class="panel-body">
+                                <th:block th:each="c : ${categories}">
+                                    <div class="btn-group m-b-10">
+                                        <th:block th:if="${c.name == '默认分类'}">
+                                            <button type="button"
+                                                    th:class="'btn btn-success waves-effect waves-light'">
+                                               <th:block th:text="${c.name}"/>
+                                            </button>
+                                        </th:block>
+                                        <th:block th:if="${c.name != '默认分类'}">
+                                            <button type="button"
+                                                    th:class="'btn btn-default dropdown-toggle waves-effect waves-light'"
+                                                    data-toggle="dropdown" aria-expanded="false">
+                                                <th:block th:text="${c.name}"/>
+                                                <span
+                                                        class="caret"></span></button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="javascript:void(0)" th:attr="id=${c.id},name=${c.name}"
+                                                       class="edit-category">修改</a>
+                                                </li>
+                                                <li><a th:href="@{/_admin/do/category/delete(id=${c.id})}"
+                                                       class="del-category">删除</a></li>
+                                            </ul>
+                                        </th:block>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <form id="cform" class="form-inline" role="form" method="post" th:action="@{/_admin/do/category/save}">
+                                    <input type="hidden" id="id" name="id"/>
+                                    <input type="hidden" id="authorId" name="authorId" th:value="${session.login_user.id}"/>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="name" id="name" placeholder="请输入分类名称"/>
+                                    </div>
+                                    <button id="save-category-btn" type="submit"
+                                            class="btn btn-success waves-effect waves-light m-l-10">保存分类
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:replace="_admin/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="_admin/footer :: footer"></div>
+<script type="text/javascript">
+
+    $('.edit-category').click(function () {
+        var id = $(this).attr('id');
+        var name = $(this).attr('name');
+        $('#cform #id').val(id);
+        $('#cform #name').val(name);
+    });
+
+</script>
+</body>
+</html>

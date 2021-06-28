@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lin1874.blog.mapper.CategoriesMapper">
+    <select id="getAllCategories" resultType="cn.lin1874.blog.po.Categories">
+        select * from `categories`
+    </select>
+    <select id="getCategoriesById" resultType="cn.lin1874.blog.po.Categories">
+        select * from `categories` where `id` = #{id}
+    </select>
+    <insert id="addCategories" parameterType="cn.lin1874.blog.po.Categories">
+        insert into `categories`(`name`,`authorId`)values(#{name},#{authorId})
+    </insert>
+    <update id="updateCategories" parameterType="cn.lin1874.blog.po.Categories">
+        update `categories` set `name` = #{name}, `authorId` = #{authorId} where `id` = #{id}
+    </update>
+    <delete id="deleteCategoryById">
+        delete from `categories` where `id` = #{id}
+    </delete>
+
+
+
+</mapper>
