@@ -1,9 +1,12 @@
 package cn.lin1874.blog.controller;
 
+import cn.lin1874.blog.po.About;
 import cn.lin1874.blog.po.Article;
 import cn.lin1874.blog.po.Categories;
+import cn.lin1874.blog.po.Links;
 import cn.lin1874.blog.service.ArticleService;
 import cn.lin1874.blog.service.CategoriesService;
+import cn.lin1874.blog.service.LinksService;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.xpath.internal.operations.Mod;
@@ -25,12 +28,18 @@ public class BlogController {
     @Autowired
     CategoriesService categoriesService;
 
+    @Autowired
+    LinksService linksService;
+
     @GetMapping("/blog/about")
-    public String toAboutPage() {
+    public String toAboutPage(Model model) {
+        model.addAttribute("text", About.text);
         return "site/about";
     }
     @GetMapping("/blog/links")
-    public String toLinksPage() {
+    public String toLinksPage(Model model) {
+        List<Links> links = linksService.getAllLinks();
+        model.addAttribute("links",links);
         return "site/links";
     }
     @GetMapping("/blog/tags")
@@ -86,7 +95,8 @@ public class BlogController {
     public String toArticlePage(@PathVariable("articleId") Integer articleId,
                                 Model model) {
         ArticleVo article = articleService.getArticleVoById(articleId);
-
+        article.setHits(article.getHits() + 1);
+        articleService.addArticleHitsById(article.getId(),article.getHits());
         String tags = article.getTags();
         String[] split = tags.split(",");
         article.setTaglist(split);

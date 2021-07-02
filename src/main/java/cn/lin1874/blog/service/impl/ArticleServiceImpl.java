@@ -20,6 +20,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     ArticleMapper articleMapper;
+
     @Override
     public Integer addArticle(Article article) {
         return articleMapper.addArticle(article);
@@ -64,5 +65,10 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<Article> getArticleByCategoriesId(Integer id) {
         return articleMapper.getArticleByCategoriesId(id);
+    }
+
+    @Override
+    public Integer addArticleHitsById(Integer id, Integer hits) {
+        return articleMapper.addArticleHitsById(id,hits);
     }
 }

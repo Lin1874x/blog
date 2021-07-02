@@ -6,7 +6,7 @@
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="theme-color" content="#2f4154">
-    <title th:text="${categoriesName}"></title>
+    <title th:text="${'文章列表 - ' + session.setting.title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"/>
      <!-- 主题依赖的图标库，不要自行修改 -->
     <link rel="stylesheet" th:href="@{/site/css/font_1749284_ba1fz6golrf.css}">

@@ -63,6 +63,10 @@
         where id = #{id}
     </update>
 
+    <update id="addArticleHitsById">
+        update `article` set `hits` = #{hits} where `id` = #{id}
+    </update>
+
 
 
 </mapper>

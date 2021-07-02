@@ -17,6 +17,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Autowired
     CategoriesMapper categoriesMapper;
+
     @Override
     public List<Categories> getAllCategories() {
         return categoriesMapper.getAllCategories();
@@ -41,4 +42,6 @@ public class CategoriesServiceImpl implements CategoriesService {
     public Categories getCategoriesById(Integer id) {
         return categoriesMapper.getCategoriesById(id);
     }
+
+
 }

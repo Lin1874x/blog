@@ -6,7 +6,7 @@
      th:fragment="header-nav">
     <div class="container">
         <a class="navbar-brand"
-           href="/">&nbsp;<strong>lin1874's space</strong>&nbsp;</a>
+           href="/">&nbsp;<strong th:text="${session.setting.blogTitle}">lin1874's space</strong>&nbsp;</a>
 
         <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
                 data-target="#navbarSupportedContent"

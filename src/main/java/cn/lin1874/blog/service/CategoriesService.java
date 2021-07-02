@@ -10,14 +10,37 @@ import java.util.List;
  */
 
 public interface CategoriesService {
-
+    /**
+     * 获取所有分类
+     * @return
+     */
     List<Categories> getAllCategories();
 
+    /**
+     * 修改分类
+     * @param categories
+     * @return
+     */
     Integer updateCategories(Categories categories);
 
+    /**
+     * 添加分类
+     * @param categories
+     * @return
+     */
     Integer addCategories(Categories categories);
 
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
     Integer deleteCategoryById(Integer id);
 
+    /**
+     * 根据分类id查询分类
+     * @param id
+     * @return
+     */
     Categories getCategoriesById(Integer id);
 }

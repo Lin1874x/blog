@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="active='setting'">
+<header th:replace="_admin/header::headerFragment"></header>
+<link th:href="@{/_admin/plugins/tagsinput/jquery.tagsinput.css}" rel="stylesheet"/>
+<link th:href="@{/_admin/plugins/select2.dist.css/select2-bootstrap.css}" rel="stylesheet"/>
+<link th:href="@{/_admin/plugins/toggles/toggles.css}" rel="stylesheet"/>
+
+<link href="//cdn.bootcss.com/multi-select/0.9.12/css/multi-select.css" rel="stylesheet"/>
+<link href="//cdn.bootcss.com/select2/3.4.8/select2.min.css" rel="stylesheet"/>
+<link th:href="@{/_admin/plugins/md/css/style.css}" rel="stylesheet"/>
+<!-- editor.md -->
+<link th:href="@{/_admin/editormd/css/editormd.css}" rel="stylesheet"/>
+<style>
+    #tags_tagsinput {
+        background-color: #fafafa;
+        border: 1px solid #eeeeee;
+    }
+
+    #tags_addTag input {
+        width: 100%;
+    }
+
+    #tags_addTag {
+        margin-top: -5px;
+    }
+</style>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="_admin/header::header-body(${active})"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">
+                            系统设置
+                        </h4>
+                    </div>
+                    <div class="col-md-12">
+                        <form method="post" th:action="@{/_admin/do/setting/update}"
+                              role="form" novalidate="novalidate">
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>网站标题</label>
+                                <input type="text" class="form-control"  name="title"
+                                       required="required" th:value="${session.setting.title}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>主页标题</label>
+                                <input type="text" class="form-control"  name="indexTitle"
+                                       required="required" th:value="${session.setting.indexTitle}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>主页标语</label>
+                                <input type="text" class="form-control"  name="indexContent"
+                                       required="required" th:value="${session.setting.indexContent}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>博客标题</label>
+                                <input type="text" class="form-control"  name="blogTitle"
+                                       required="required" th:value="${session.setting.blogTitle}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>博客标语</label>
+                                <input type="text" class="form-control"  name="blogContent"
+                                       required="required" th:value="${session.setting.blogContent}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>尾部信息（可以使用html）</label>
+                                <input type="text" class="form-control"  name="footer"
+                                       required="required" th:value="${session.setting.footer}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
+                                <label>网站备案号</label>
+                                <input type="text" class="form-control"  name="record"
+                                       required="required" th:value="${session.setting.record}"
+                                       aria-required="true"/>
+                            </div>
+                            <div class="clearfix"></div>
+
+
+                            <div class="text-right">
+                                <button type="submit"  class="btn btn-primary waves-effect waves-light">
+                                    提交保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div th:replace="_admin/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="_admin/footer :: footer"></div>
+
+<script th:src="@{/_admin/plugins/tagsinput/jquery.tagsinput.min.js}"></script>
+<script th:src="@{/_admin/plugins/jquery-multi-select/jquery.quicksearch.js}"></script>
+
+<!-- editor.md -->
+<script th:src="@{/_admin/editormd/src/editormd.js}"></script>
+
+<script th:src="@{//cdn.bootcss.com/multi-select/0.9.12/js/jquery.multi-select.min.js}"></script>
+<script th:src="@{//cdn.bootcss.com/select2/3.4.8/select2.min.js}"></script>
+<script th:src="@{//cdn.bootcss.com/jquery-toggles/2.0.4/toggles.min.js}"></script>
+<!--<script th:src="@{/_admin/js/article.js}"></script>-->
+</body>
+</html>

@@ -34,7 +34,10 @@ public class ArticleController {
     @PostMapping("/_admin/do/article/update")
     public String doArticleUpdate(Article article,
                                   @RequestParam("pageNum") Integer pageNum) {
-
+        String content = article.getContent();
+        if (content.startsWith(",")) {
+            article.setContent(content.substring(1));
+        }
         article.setModifiedTime(new Date());
         articleService.updateArticle(article);
         return "redirect:/_admin/to/article/list?pageNum=" + pageNum;
@@ -86,7 +89,10 @@ public class ArticleController {
     @PostMapping("/_admin/article/save")
     public String saveArticle(Article article, HttpSession session) {
         User login_user = (User) session.getAttribute("login_user");
-
+        String content = article.getContent();
+        if (content.startsWith(",")) {
+            article.setContent(content.substring(1));
+        }
         article.setCreatedTime(new Date());
         article.setModifiedTime(new Date());
         article.setAuthorId(login_user.getId());

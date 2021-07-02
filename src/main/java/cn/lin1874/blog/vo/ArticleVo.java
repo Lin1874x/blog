@@ -15,7 +15,16 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ArticleVo extends Article {
+    /**
+     * 作者名字
+     */
     private String author;
+    /**
+     * 标签列表
+     */
     private String[] taglist;
+    /**
+     * 目录名字
+     */
     private String category;
 }

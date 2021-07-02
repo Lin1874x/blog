@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lin1874.blog.mapper.UploadMapper">
+
+    <insert id="addUpload" parameterType="cn.lin1874.blog.po.Upload">
+        insert into `upload`(`fileName`,`url`) values (#{fileName},#{url})
+    </insert>
+    <select id="getAllFile" resultType="cn.lin1874.blog.po.Upload">
+        select * from `upload`
+    </select>
+
+
+</mapper>

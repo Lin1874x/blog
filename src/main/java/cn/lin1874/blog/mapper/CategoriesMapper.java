@@ -3,6 +3,7 @@ package cn.lin1874.blog.mapper;
 import cn.lin1874.blog.po.Categories;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 

@@ -29,4 +29,6 @@ public interface ArticleMapper {
     Integer updateArticle(Article article);
 
     List<Article> getArticleByCategoriesId(@Param("categories") Integer id);
+
+    Integer addArticleHitsById(@Param("id") Integer id,@Param("hits") Integer hits);
 }
