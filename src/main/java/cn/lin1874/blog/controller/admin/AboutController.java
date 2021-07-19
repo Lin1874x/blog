@@ -14,11 +14,22 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 public class AboutController {
+    /**
+     * 请求转发到关于页编辑页面
+     * @param model
+     * @return
+     */
     @GetMapping("/_admin/to/about/edit")
     public String toAboutEdit(Model model) {
         model.addAttribute("text",About.text);
         return "_admin/about_edit";
     }
+
+    /**
+     * 更新关于页
+     * @param aboutVo
+     * @return
+     */
     @PostMapping("/_admin/do/about/update")
     public String doAboutUpdate(AboutVo aboutVo) {
         if (aboutVo.getText() != null) {

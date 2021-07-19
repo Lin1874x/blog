@@ -5,6 +5,7 @@ import cn.lin1874.blog.po.Categories;
 import cn.lin1874.blog.service.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,12 +14,14 @@ import java.util.List;
  * @date 2021/6/22 - 11:23
  */
 @Service
+@Transactional
 public class CategoriesServiceImpl implements CategoriesService {
 
     @Autowired
     CategoriesMapper categoriesMapper;
 
     @Override
+    @Transactional
     public List<Categories> getAllCategories() {
         return categoriesMapper.getAllCategories();
     }

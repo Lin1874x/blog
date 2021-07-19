@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
  * @author lin1874
  * @date 2021/6/30 - 8:24
  */
+
 public class Setting {
+
     public static String indexTitle = "Lin1874's space";
     public static String indexContent = "Walking on my way!";
     public static String blogTitle = "Lin1874's blog";

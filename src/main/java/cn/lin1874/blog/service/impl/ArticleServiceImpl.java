@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @date 2021/6/22 - 12:20
  */
 @Service
+@Transactional
 public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
@@ -23,6 +25,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Integer addArticle(Article article) {
+        int a = 5 / 0;
         return articleMapper.addArticle(article);
     }
 

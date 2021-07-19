@@ -77,15 +77,24 @@ public class ArticleController {
         return "_admin/article_list";
     }
 
-
-
+    /**
+     * 转发到文章编辑页面
+     * @param model
+     * @return
+     */
     @GetMapping("/_admin/to/publish")
-    public String toArticlePublish(Model model) {
+    public String toArticleEdit(Model model) {
         List<Categories> allCategories = categoriesService.getAllCategories();
         model.addAttribute("categories",allCategories);
         return "_admin/article_edit";
     }
 
+    /**
+     * 保存文章
+     * @param article
+     * @param session
+     * @return
+     */
     @PostMapping("/_admin/article/save")
     public String saveArticle(Article article, HttpSession session) {
         User login_user = (User) session.getAttribute("login_user");

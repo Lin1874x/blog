@@ -1,4 +1,4 @@
-package cn.lin1874.blog.controller;
+package cn.lin1874.blog.controller.blog;
 
 import cn.lin1874.blog.po.About;
 import cn.lin1874.blog.po.Article;
@@ -9,7 +9,6 @@ import cn.lin1874.blog.service.CategoriesService;
 import cn.lin1874.blog.service.LinksService;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,7 +72,7 @@ public class BlogController {
         return "site/archives";
     }
 
-    @GetMapping("/blog")
+    @RequestMapping("/blog")
     public String toBlogIndexPage(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                   Model model) {
