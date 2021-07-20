@@ -85,21 +85,46 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-10 m-auto">
-                        <div class="row links">
-                            <div class="card col-lg-4 col-md-6 col-sm-12" th:each="link : ${links}">
-                                <a th:href="@{${link.url}}" class="card-body hover-with-bg" target="_blank"
-                                   rel="noopener external nofollow noreferrer">
-                                    <div class="card-content">
-                                        <div class="link-avatar my-auto">
-                                            <img th:src="@{${link.pic}}" />
-                                        </div>
-                                        <div class="link-text">
-                                            <div class="link-title" th:text="${link.name}"></div>
-                                            <div class="link-intro" th:text="${link.introduce}"></div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
+                        <div class="row links" id="main">
+
+<!--                            <div class="card col-lg-4 col-md-6 col-sm-12">-->
+<!--                                <a th:href="@{${link.url}}" class="card-body hover-with-bg" target="_blank"-->
+<!--                                   rel="noopener external nofollow noreferrer">-->
+<!--                                    <div class="card-content">-->
+<!--                                        <div class="link-avatar my-auto">-->
+<!--                                            <img th:src="@{${link.pic}}" />-->
+<!--                                        </div>-->
+<!--                                        <div class="link-text">-->
+<!--                                            <div class="link-title" th:text="${link.name}"></div>-->
+<!--                                            <div class="link-intro" th:text="${link.introduce}"></div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                            </div>-->
+                            <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+                            <script>
+                                $(function (){
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/blog/links/get/data",
+                                        success: function (response) {
+                                            var data = response.data;
+                                            $.each(data,function (){
+                                                $("<div></div>").addClass("card col-lg-4 col-md-6 col-sm-12")
+                                                    .append($("<a></a>").attr("href",this.url).addClass("card-body hover-with-bg")
+                                                        .attr("target","_blank").attr("rel","noopener external nofollow noreferrer")
+                                                        .append($("<div></div>").addClass("card-content").append($("<div></div>")
+                                                            .addClass("link-avatar my-auto").append($("<img/>").attr("src",this.pic)))
+                                                            .append($("<div></div>").addClass("link-text")
+                                                                .append("<div></div>").addClass("link-title").text(this.name)
+                                                                .append("<div></div>").addClass("link-intro").text(this.introduce)))).appendTo($("#main"));
+                                            })
+                                        }
+                                    })
+                                })
+                            </script>
+
 
                         </div>
 
@@ -126,8 +151,7 @@
         NProgress.done();
     })
 </script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
 <script th:src="@{/site/js/events.js}"></script>
 <script th:src="@{/site/js/plugins.js}"></script>
 

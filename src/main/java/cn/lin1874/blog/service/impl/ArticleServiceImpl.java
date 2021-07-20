@@ -1,9 +1,12 @@
 package cn.lin1874.blog.service.impl;
 
+import cn.lin1874.blog.exception.DatabaseException;
 import cn.lin1874.blog.mapper.ArticleMapper;
 import cn.lin1874.blog.po.Article;
+import cn.lin1874.blog.po.Categories;
 import cn.lin1874.blog.po.User;
 import cn.lin1874.blog.service.ArticleService;
+import cn.lin1874.blog.service.CategoriesService;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lin1874
@@ -26,6 +31,9 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     ArticleMapper articleMapper;
 
+    @Autowired
+    CategoriesService categoriesService;
+
     @Override
     public Integer addArticle(Article article,HttpSession session) {
 
@@ -34,19 +42,12 @@ public class ArticleServiceImpl implements ArticleService {
         article.setCreatedTime(new Date());
         article.setModifiedTime(new Date());
         article.setHits(0);
-        return articleMapper.addArticle(article);
+        Integer res = articleMapper.addArticle(article);
+        if (res == 0) {
+            throw new DatabaseException();
+        }
+        return res;
     }
-
-//    @Override
-//    public PageInfo<Article> getArticleByUserIdOrderByModifiedTime(Integer pageNum, HttpSession session) {
-//        final int pageSize = 5;
-//        User user = (User) session.getAttribute("loginAcct");
-//        if (user == null) throw new RuntimeException();
-//        PageHelper.startPage(pageNum,pageSize);
-//        List<Article> articles = articleMapper.getArticleByUserIdOrderByModifiedTime(user.getId());
-//        PageInfo<Article> pageInfo = new PageInfo<>(articles,5);
-//        return pageInfo;
-//    }
 
     @Override
     public Integer deleteArticleById(Integer id) {
@@ -64,24 +65,45 @@ public class ArticleServiceImpl implements ArticleService {
         PageHelper.startPage(pageNum,pageSize);
         List<ArticleVo> articles = articleMapper.getArticleVoOrderByModifiedTime();
         PageInfo<ArticleVo> pageInfo = new PageInfo<>(articles,5);
+
+        List<ArticleVo> list = pageInfo.getList();
+        for (ArticleVo articleVo : list) {
+            if(articleVo.getTitlePic() == null) {
+                articleVo.setTitlePic("/site/images/cover.png");
+            }
+            String tags = articleVo.getTags();
+            String[] split = tags.split(",");
+            articleVo.setTaglist(split);
+        }
+
         return pageInfo;
     }
 
     @Override
     public ArticleVo getArticleVoById(Integer articleId) {
-        return articleMapper.getArticleVoById(articleId);
+        ArticleVo article = articleMapper.getArticleVoById(articleId);
+        article.setHits(article.getHits() + 1);
+        addArticleHitsById(article.getId(),article.getHits());
+        String tags = article.getTags();
+        String[] split = tags.split(",");
+        article.setTaglist(split);
+        return article;
     }
 
     @Override
     public Integer updateArticle(Article article) {
         article.setModifiedTime(new Date());
-
         return articleMapper.updateArticle(article);
     }
 
     @Override
-    public List<Article> getArticleByCategoriesId(Integer id) {
-        return articleMapper.getArticleByCategoriesId(id);
+    public Map<String,Object> getArticleByCategoriesId(Integer id) {
+        List<Article> list = articleMapper.getArticleByCategoriesId(id);
+        Categories categories = categoriesService.getCategoriesById(id);
+        Map<String,Object> mp = new HashMap<>();
+        mp.put("list",list);
+        mp.put("categoryName",categories.getName());
+        return mp;
     }
 
     @Override

@@ -88,14 +88,25 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-10 m-auto">
-                        <div class="category-list">
-                            <div class="category row" th:each="item : ${categories}">
-                                <a class="category-item collapsed list-group-item col-10 col-md-11"
-                                        th:href="@{'/blog/categories/' + ${item.id}}"
-                                   th:text="${item.name}"
-                                >
-                                </a>
-                            </div>
+                        <div class="category-list" id="main">
+
+                            <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+                            <script>
+                                $(function (){
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/blog/categories/get/data",
+                                        success: function (response) {
+                                            console.log(response);
+                                            $.each(response.data,function (){
+                                                $("<div></div>").addClass("category row")
+                                                    .append($("<a></a>").addClass("category-item collapsed list-group-item col-10 col-md-11")
+                                                    .attr("href","/blog/category?id=" + this.id).text(this.name)).appendTo("#main");
+                                            })
+                                        }
+                                    })
+                                })
+                            </script>
 
                         </div>
 

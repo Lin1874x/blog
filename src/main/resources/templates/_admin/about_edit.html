@@ -132,9 +132,9 @@
             data: JSON.stringify(data),
             contentType: "application/json;charset=UTF-8",
             dataType: "json",
-            success: function (data) {
-                alert(data.message);
-                $("#content").val(data.data);
+            success: function (response) {
+                alert(response.message);
+                $("#content").val(response.data);
             }
         });
     });
@@ -143,8 +143,8 @@
         $.ajax({
             type: "GET",
             url: "/_admin/get/data/about",
-            success: function (data) {
-                $("#content").val(data.data);
+            success: function (response) {
+                $("#content").val(response.data);
             }
         });
     }

@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lin1874
@@ -65,7 +66,7 @@ public interface ArticleService {
      * @param id
      * @return
      */
-    List<Article> getArticleByCategoriesId(Integer id);
+    Map<String,Object> getArticleByCategoriesId(Integer id);
 
     Integer addArticleHitsById(Integer id, Integer hits);
 }

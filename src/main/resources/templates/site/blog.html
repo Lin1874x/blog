@@ -14,6 +14,7 @@
     <link rel="stylesheet" th:href="@{/site/css/main.css}"/>
     <!-- 自定义样式保持在最底部 -->
     <link rel="stylesheet" th:href="@{/site/css/custom.css}">
+
     <script id="fluid-configs">
         var Fluid = window.Fluid || {};
         var CONFIG = {
@@ -88,86 +89,10 @@
         <div class="py-5" id="board" style=margin-top:0>
             <div class="container">
                 <div class="row">
-                    <div class="col-12 col-md-10 m-auto">
+                    <div class="col-12 col-md-10 m-auto" id="main">
 
-                        <div class="row mx-auto index-card" th:each="article : ${pageInfo.list}">
-                            <!--展示图-->
-                            <div class="col-12 col-md-4 m-auto index-img">
-                                <a th:href="@{'/blog/article/' + ${article.id}}" target="_self">
-                                    <img th:src="${article.titlePic}">
-                                </a>
-                            </div>
-                            <!--内容信息-->
-                            <article class="col-12 col-md-8 mx-auto index-info">
-                                <!--                                标题-->
-                                <h1 class="index-header">
-                                    <a th:href="@{'/blog/article/' + ${article.id}}" target="_self"
-                                       th:text="${article.title}">
-                                    </a>
-                                </h1>
-                                <!--简介-->
-                                <p class="index-excerpt">
-                                    <a th:href="@{'/blog/article/' + ${article.id}}" target="_self"
-                                       th:text="${article.shortContent}">
-                                    </a>
-                                </p>
-                                <div class="index-btm post-metas">
-                                    <!--时间-->
-                                    <div class="post-meta mr-3">
-                                        <i class="iconfont icon-date"></i>
-                                        <time th:text="${#dates.format(article.createdTime,'yyyy-MM-dd')}" pubdate>
-                                        </time>
-                                    </div>
 
-                                    <!--目录-->
-                                    <div class="post-meta mr-3">
-                                        <i class="iconfont icon-category"></i>
 
-                                        <a th:href="@{'/blog/categories/' + ${article.categories}}"
-                                           th:text="${article.category}">Golang</a>
-
-                                    </div>
-                                    <!--                                    标签-->
-                                    <div class="post-meta">
-                                        <i class="iconfont icon-tags"></i>
-
-                                        <a href="javascript:void(0);" th:each="tag : ${article.taglist}"
-                                           th:text="${tag}"></a>
-                                    </div>
-
-                                </div>
-                            </article>
-                        </div>
-
-                        <!--翻页条-->
-                        <div>
-                            <div class="clearfix">
-                                <ul class="pagination m-b-5 pull-right">
-                                    <li th:if="${pageInfo.hasPreviousPage}">
-                                        <a th:href="@{/blog(pageNum=${pageInfo.prePage})}" aria-label="Previous">
-                                            <i class="fa fa-angle-left"></i>&nbsp;上一页
-                                        </a>
-                                    </li>
-
-                                    <th:block th:each="nav : ${pageInfo.navigatepageNums}">
-                                        <li th:class="${nav==pageInfo.pageNum}?'active':''">
-                                            <a th:href="@{/blog(pageNum=${nav})}" th:text="${nav}"></a>
-                                        </li>
-                                    </th:block>
-
-                                    <th:block th:if="${pageInfo.hasNextPage}">
-                                        <li>
-                                            <a th:href="@{/blog(pageNum=${pageInfo.nextPage})}" aria-label="Next">
-                                                下一页&nbsp;<i class="fa fa-angle-right"></i>
-                                            </a>
-                                        </li>
-                                    </th:block>
-
-                                    <li><span th:text="'共'+${pageInfo.pages}+'页'"></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!--翻页条结束-->
                     </div>
                 </div>
             </div>
@@ -183,6 +108,103 @@
 </main>
 
 <div th:replace="site/footer :: footer"></div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script>
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+    $(function (){
+        var pageNum = getPageNum();
+        getBlogData(pageNum);
+    })
+    function getBlogData(pageNum) {
+        $.ajax({
+            type: "GET",
+            url: "/blog/get/data",
+            data: "pn=" + pageNum,
+            success: function (response) {
+                console.log(response);
+                showBlogMenu(response.data);
+                showBlogNav(response.data);
+            }
+        })
+    }
+    function showBlogNav(data) {
+        var pageInfo = data;
+        var ul = $("<ul></ul>").addClass("pagination");
+        var preLi = $("<li></li>").append($("<a></a>").attr("href","/blog?pn=" + (pageInfo.pageNum - 1)).append($("<span></span>").text("<")));
+        if (pageInfo.isFirstPage) {
+            preLi.addClass("disabled");
+            preLi.children().eq(0).attr("href","#");
+        }
+        ul.append(preLi);
+        $.each(pageInfo.navigatepageNums,function (){
+            var navigatepageLi = $("<li></li>").append($("<a></a>").attr("href","/blog?pn=" + (this)).append($("<span></span>").text(this)));
+            if (this == pageInfo.pageNum) {
+                navigatepageLi.addClass("active");
+            }
+            ul.append(navigatepageLi);
+        })
+        var nextLi = $("<li></li>").append($("<a></a>").attr("href","/blog?pn=" + (pageInfo.pageNum + 1)).append($("<span></span>").text(">")));
+        if (pageInfo.isLastPage) {
+            nextLi.addClass("disabled");
+            nextLi.children().eq(0).attr("href","#");
+        }
+        ul.append(nextLi).appendTo($("#main"));
+
+    }
+    function showBlogMenu(data) {
+        $("#main").empty();
+        $.each(data.list,function (){
+            console.log(this);
+            var rowDiv = $("<div></div>").addClass("row mx-auto index-card");
+            var imgDiv = $("<div></div>").addClass("col-12 col-md-4 m-auto index-img")
+                .append($("<a></a>").attr("href","/blog/article?id=" + this.id).attr("target","_self")
+                .append($("<img/>").attr("src",this.titlePic)));
+            var articleDiv = $("<article></article>").addClass("col-12 col-md-8 mx-auto index-info");
+            var titleDiv = $("<h1></h1>").addClass("index-header")
+                .append($("<a></a>").attr("href","/blog/article?id=" + this.id).attr("target","_self").text(this.title)).appendTo(articleDiv);
+            var introduceDiv = $("<p></p>").addClass("index-excerpt")
+                .append($("<a></a>").attr("href","/blog/article?id=" + this.id).attr("target","_self").text(this.shotContent)).appendTo(articleDiv);
+            var timeDiv = $("<div></div>").addClass("post-meta mr-3")
+                .append($("<i></i>").addClass("iconfont icon-date"))
+                .append($("<time></time>").text(this.createdTime)).appendTo(articleDiv);
+            var categoryDiv = $("<div></div>").addClass("post-meta mr-3")
+                .append($("<i></i>").addClass("iconfont icon-category"))
+                .append($("<a></a>").attr("href","/blog/category?id=" + this.categories).text(this.category)).appendTo(articleDiv);
+            var tagsDiv = $("<div></div>").addClass("post-meta")
+                .append($("<i></i>").addClass("iconfont icon-tags"));
+            $.each(this.taglist,function () {
+                $("<a></a>").attr("href","javascript:void(0);").text(this).appendTo(tagsDiv);
+            });
+            tagsDiv.appendTo(articleDiv);
+            rowDiv.append(imgDiv).append(articleDiv).appendTo($("#main"));
+        })
+    }
+
+    function getPageNum() {
+        var pageNum = getUrlParam('pn');
+        if (pageNum == null) {
+            pageNum = 1;
+        }
+        return pageNum;
+    }
+</script>
+
+<!--内容信息-->
+<article class="col-12 col-md-8 mx-auto index-info">
+
+    <div class="index-btm post-metas">
+
+
+
+    </div>
+</article>
+
 
 
 <!-- SCRIPTS -->

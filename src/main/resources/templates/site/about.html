@@ -117,7 +117,7 @@
 
                         <article class="about-content page-content mt-5">
                             <div id="doc-content" class="markdown-body">
-                                <textarea style="display:none;" placeholder="markdown" th:text="${text}"></textarea>
+                                <textarea id="content" style="display:none;" placeholder="markdown"></textarea>
                             </div>
 
 
@@ -194,8 +194,18 @@
 <link rel="stylesheet" th:href="@{/_admin/editormd/css/editormd.preview.css}"/>
 <script type="text/javascript">
     $(function () {
-        // 绑定我们要渲染页面的 div
-        var testEditor = editormd.markdownToHTML("doc-content", {//注意：这里是上面DIV的id
+        $.ajax({
+            type: "GET",
+            url: "/blog/about/get/data",
+            success: function (response) {
+                $("#content").val(response.data);
+                testEditor();
+            }
+        })
+    });
+    // 绑定我们要渲染页面的 div
+    function testEditor(){
+        editormd.markdownToHTML("doc-content", {//注意：这里是上面DIV的id
             htmlDecode: "style,script,iframe",
             emoji: true,
             taskList: true,
@@ -205,7 +215,7 @@
             sequenceDiagram: true, // 默认不解析
             codeFold: true
         });
-    });
+    }
 </script>
 </body>
 </html>

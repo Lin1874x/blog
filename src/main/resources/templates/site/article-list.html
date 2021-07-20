@@ -71,7 +71,7 @@
         <div class="full-bg-img">
             <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
                 <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" th:title="${categoriesName}">
+            <span class="h2" id="subtitle">
               
             </span>
 
@@ -91,13 +91,43 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-10 m-auto">
-                        <div class="list-group">
-                            <hr>
+                        <div class="list-group" id="main">
 
-                            <a th:href="@{'/blog/article/' + ${article.id}}" class="list-group-item list-group-item-action" th:each="article : ${articles}">
-                                <span class="archive-post-title" th:text="${article.title}"></span>
-                                <time style="float: right;" th:text="${#dates.format(article.modifiedTime,'yyyy-MM-dd')}"></time>
-                            </a>
+<!--                            <a th:href="@{'/blog/article/' + ${article.id}}" class="list-group-item list-group-item-action" th:each="article : ${articles}">-->
+<!--                                <span class="archive-post-title" th:text="${article.title}"></span>-->
+<!--                                <time style="float: right;" th:text="${#dates.format(article.modifiedTime,'yyyy-MM-dd')}"></time>-->
+<!--                            </a>-->
+                            <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+                            <script>
+                                //获取url中的参数
+                                function getUrlParam(name) {
+                                    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                                    var r = window.location.search.substr(1).match(reg);
+                                    if (r != null) return unescape(r[2]); return null;
+                                }
+                                $(function (){
+                                    getArchivesData();
+                                })
+                                function getArchivesData(){
+                                    var id = getUrlParam("id");
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/blog/categories/list/get/data",
+                                        data: "id=" + id,
+                                        success: function (response) {
+                                            showArchives(response.data);
+                                        }
+                                    })
+                                }
+                                function showArchives(data) {
+                                    $("#subtitle").text(data.categoryName);
+                                    $.each(data.list,function (){
+                                        $("<a></a>").attr("href","/blog/article?id=" + this.id).addClass("list-group-item list-group-item-action")
+                                            .append($("<span></span>").addClass("archive-post-title").text(this.title))
+                                            .append($("<time></time>").attr("style","float: right;").text(this.modifiedTime)).appendTo($("#main"));
+                                    })
+                                }
+                            </script>
 
                         </div>
 
@@ -153,16 +183,7 @@
 <script defer th:src="@{/site/js/leancloud.js}"></script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js"></script>
-<script>
-    (function (window, document) {
-        var typing = Fluid.plugins.typing;
-        var title = document.getElementById('subtitle').title;
 
-        typing(title)
-
-    })(window, document);
-</script>
 
 
 <!-- Baidu Analytics -->

@@ -86,46 +86,102 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md-10 m-auto">
-                        <div class="list-group">
-                            <p class="h4" th:text="'共计' + ${pageInfo.getTotal()} + '篇文章'"></p>
-                            <hr>
+                        <div class="list-group" id="main">
 
-                            <a th:href="@{'/blog/article/' + ${article.id}}" class="list-group-item list-group-item-action" th:each="article : ${pageInfo.list}">
-                                <span class="archive-post-title" th:text="${article.title}"></span>
-                                <time style="float: right;" th:text="${#dates.format(article.modifiedTime,'yyyy-MM-dd')}"></time>
-                            </a>
 
                         </div>
+                        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+                        <script>
+                            //获取url中的参数
+                            function getUrlParam(name) {
+                                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                                var r = window.location.search.substr(1).match(reg);
+                                if (r != null) return unescape(r[2]); return null;
+                            }
+                            function getPageNum() {
+                                var pageNum = getUrlParam('pn');
+                                if (pageNum == null) pageNum = 1;
+                                return pageNum;
+                            }
+                            $(function (){
+                                var pageNum = getPageNum();
+                                getArchivesData(pageNum);
+                            })
+                            function getArchivesData(pageNum){
+                                $.ajax({
+                                    type: "GET",
+                                    url: "/blog/archives/get/data",
+                                    data: "pn=" + pageNum,
+                                    success: function (response) {
+                                        showArchives(response.data);
+                                        showNav(response.data);
+                                    }
+                                })
+                            }
+                            function showNav(data) {
+                                var pageInfo = data;
+                                var ul = $("<ul></ul>").addClass("pagination");
+                                var preLi = $("<li></li>").append($("<a></a>").attr("href","/blog/archives?pn=" + (pageInfo.pageNum - 1)).append($("<span></span>").text("<")));
+                                if (pageInfo.isFirstPage) {
+                                    preLi.addClass("disabled");
+                                    preLi.children().eq(0).attr("href","#");
+                                }
+                                ul.append(preLi);
+                                $.each(pageInfo.navigatepageNums,function (){
+                                    var navigatepageLi = $("<li></li>").append($("<a></a>").attr("href","/blog/archives?pn=" + (this)).append($("<span></span>").text(this)));
+                                    if (this == pageInfo.pageNum) {
+                                        navigatepageLi.addClass("active");
+                                    }
+                                    ul.append(navigatepageLi);
+                                })
+                                var nextLi = $("<li></li>").append($("<a></a>").attr("href","/blog/archives?pn=" + (pageInfo.pageNum + 1)).append($("<span></span>").text(">")));
+                                if (pageInfo.isLastPage) {
+                                    nextLi.addClass("disabled");
+                                    nextLi.children().eq(0).attr("href","#");
+                                }
+                                ul.append(nextLi).appendTo($("#main"));
 
+                            }
+                            function showArchives(data) {
+                                $("#main").empty();
+                                $("<p></p>").addClass("h4").text("共计"+ data.total+ "篇文章").appendTo($("#main"));
+                                $("<hr>").appendTo($("#main"));
+                                $.each(data.list,function (){
+                                    $("<a></a>").attr("href","/blog/article?id=" + this.id).addClass("list-group-item list-group-item-action")
+                                        .append($("<span></span>").addClass("archive-post-title").text(this.title))
+                                        .append($("<time></time>").attr("style","float: right;").text(this.modifiedTime)).appendTo($("#main"));
+                                })
+                            }
+                        </script>
 
                         <!--翻页条-->
-                        <div>
-                            <div class="clearfix">
-                                <ul class="pagination m-b-5 pull-right">
-                                    <li th:if="${pageInfo.hasPreviousPage}">
-                                        <a th:href="@{/blog/archives(pageNum=${pageInfo.prePage})}" aria-label="Previous">
-                                            <i class="fa fa-angle-left"></i>&nbsp;上一页
-                                        </a>
-                                    </li>
+<!--                        <div>-->
+<!--                            <div class="clearfix">-->
+<!--                                <ul class="pagination m-b-5 pull-right">-->
+<!--                                    <li th:if="${pageInfo.hasPreviousPage}">-->
+<!--                                        <a th:href="@{/blog/archives(pageNum=${pageInfo.prePage})}" aria-label="Previous">-->
+<!--                                            <i class="fa fa-angle-left"></i>&nbsp;上一页-->
+<!--                                        </a>-->
+<!--                                    </li>-->
 
-                                    <th:block th:each="nav : ${pageInfo.navigatepageNums}">
-                                        <li th:class="${nav==pageInfo.pageNum}?'active':''">
-                                            <a th:href="@{/blog/archives(pageNum=${nav})}" th:text="${nav}"></a>
-                                        </li>
-                                    </th:block>
+<!--                                    <th:block th:each="nav : ${pageInfo.navigatepageNums}">-->
+<!--                                        <li th:class="${nav==pageInfo.pageNum}?'active':''">-->
+<!--                                            <a th:href="@{/blog/archives(pageNum=${nav})}" th:text="${nav}"></a>-->
+<!--                                        </li>-->
+<!--                                    </th:block>-->
 
-                                    <th:block th:if="${pageInfo.hasNextPage}">
-                                        <li>
-                                            <a th:href="@{/blog/archives(pageNum=${pageInfo.nextPage})}" aria-label="Next">
-                                                下一页&nbsp;<i class="fa fa-angle-right"></i>
-                                            </a>
-                                        </li>
-                                    </th:block>
+<!--                                    <th:block th:if="${pageInfo.hasNextPage}">-->
+<!--                                        <li>-->
+<!--                                            <a th:href="@{/blog/archives(pageNum=${pageInfo.nextPage})}" aria-label="Next">-->
+<!--                                                下一页&nbsp;<i class="fa fa-angle-right"></i>-->
+<!--                                            </a>-->
+<!--                                        </li>-->
+<!--                                    </th:block>-->
 
-                                    <li><span th:text="'共'+${pageInfo.pages}+'页'"></span></li>
-                                </ul>
-                            </div>
-                        </div>
+<!--                                    <li><span th:text="'共'+${pageInfo.pages}+'页'"></span></li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <!--翻页条结束-->
 
 
