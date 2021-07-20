@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Mapper
 public interface UserMapper {
-    List<User> getUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+    User getUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 
     User getUserByUsername(String s);
 }

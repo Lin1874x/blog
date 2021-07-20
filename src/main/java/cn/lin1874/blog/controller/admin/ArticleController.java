@@ -5,15 +5,14 @@ import cn.lin1874.blog.po.Categories;
 import cn.lin1874.blog.po.User;
 import cn.lin1874.blog.service.ArticleService;
 import cn.lin1874.blog.service.CategoriesService;
+import cn.lin1874.blog.utils.ResultEntity;
+import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
@@ -23,7 +22,7 @@ import java.util.List;
  * @author lin1874
  * @date 2021/6/22 - 11:02
  */
-@Controller
+@RestController
 public class ArticleController {
 
     @Autowired
@@ -31,85 +30,60 @@ public class ArticleController {
     @Autowired
     ArticleService articleService;
 
-    @PostMapping("/_admin/do/article/update")
-    public String doArticleUpdate(Article article,
-                                  @RequestParam("pageNum") Integer pageNum) {
-        String content = article.getContent();
-        if (content.startsWith(",")) {
-            article.setContent(content.substring(1));
-        }
-        article.setModifiedTime(new Date());
-        articleService.updateArticle(article);
-        return "redirect:/_admin/to/article/list?pageNum=" + pageNum;
-    }
-
-    @GetMapping("/_admin/to/article/update")
-    public String toArticleUpdate(@RequestParam("id") Integer id,
-                                  @RequestParam("pageNum") Integer pageNum,
-                                  Model model) {
-        Article article = articleService.getArticleById(id);
-        List<Categories> allCategories = categoriesService.getAllCategories();
-
-        model.addAttribute("categories",allCategories);
-        model.addAttribute("article",article);
-        model.addAttribute("pageNum",pageNum);
-
-        return "_admin/article_update";
-    }
-
-
-
-    @GetMapping("/_admin/do/article/delete")
-    public String doArticleDelete(@RequestParam("id") Integer id,
-                                  @RequestParam("pageNum") Integer pageNum) {
-        articleService.deleteArticleById(id);
-        return "redirect:/_admin/to/article/list?pageNum=" + pageNum;
-    }
-
-    @GetMapping("/_admin/to/article/list")
-    public String toArticleList(@RequestParam(name = "pageNum",defaultValue = "1") Integer pageNum,
-                                @RequestParam(name = "pageSize",defaultValue = "5") Integer pageSize,
-                                Model model, HttpSession session) {
-        User login_user = (User) session.getAttribute("login_user");
-        PageInfo<Article> articles =
-                articleService.getArticleByUserIdOrderByModifiedTime(login_user.getId(),pageNum,pageSize);
-        model.addAttribute("articles",articles);
-        return "_admin/article_list";
-    }
-
     /**
-     * 转发到文章编辑页面
-     * @param model
-     * @return
-     */
-    @GetMapping("/_admin/to/publish")
-    public String toArticleEdit(Model model) {
-        List<Categories> allCategories = categoriesService.getAllCategories();
-        model.addAttribute("categories",allCategories);
-        return "_admin/article_edit";
-    }
-
-    /**
-     * 保存文章
+     * 文章添加
      * @param article
      * @param session
      * @return
      */
-    @PostMapping("/_admin/article/save")
-    public String saveArticle(Article article, HttpSession session) {
-        User login_user = (User) session.getAttribute("login_user");
-        String content = article.getContent();
-        if (content.startsWith(",")) {
-            article.setContent(content.substring(1));
-        }
-        article.setCreatedTime(new Date());
-        article.setModifiedTime(new Date());
-        article.setAuthorId(login_user.getId());
-        article.setHits(0);
+    @PostMapping("/_admin/do/article/add")
+    public ResultEntity addArticle(Article article, HttpSession session) {
+        articleService.addArticle(article,session);
+        return new ResultEntity(ResultEntity.SUCCESS,"添加成功",null);
+    }
 
-        articleService.addArticle(article);
+    /**
+     * 获取文章列表
+     * @param pageNum
+     * @return
+     */
+    @GetMapping("/_admin/get/article/list")
+    public ResultEntity<PageInfo<ArticleVo>> getArticleList(@RequestParam(value = "pn", defaultValue = "1") Integer pageNum) {
+        return new ResultEntity<>(ResultEntity.SUCCESS,null,articleService.getArticleVoOrderByModifiedTime(pageNum));
+    }
 
-        return "redirect:/_admin/to/article/list";
+    /**
+     * 根据文章id获取文章信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/_admin/get/articlevo/data")
+    public ResultEntity<ArticleVo> getArticleVoById(@RequestParam("id") Integer id) {
+        return new ResultEntity<>(ResultEntity.SUCCESS,null,articleService.getArticleVoById(id));
+    }
+
+
+    /**
+     * 跟新文章
+     * @param article
+     * @return
+     */
+    @PostMapping("/_admin/do/article/update")
+    public ResultEntity doArticleUpdate(Article article) {
+        articleService.updateArticle(article);
+        return new ResultEntity(ResultEntity.SUCCESS,"更新成功",null);
+    }
+
+
+    /**
+     * 文章删除
+     * @param id
+     * @return
+     */
+    @GetMapping("/_admin/do/article/delete")
+    public ResultEntity doArticleDelete(@RequestParam("id") Integer id) {
+        articleService.deleteArticleById(id);
+        return new ResultEntity(ResultEntity.SUCCESS,"删除成功",null);
     }
 
 }

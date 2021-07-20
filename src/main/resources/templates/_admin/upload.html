@@ -17,54 +17,29 @@
                         <div class="col-md-12 portlets">
                             <!-- Your awesome content goes here -->
                             <div class="m-b-30">
-                                <form th:action="@{/_admin/do/upload}" enctype="multipart/form-data" method="post">
-                                    <div >
-                                        <input name="file" type="file" multiple="multiple"/>
+                                <form id="cform" enctype="multipart/form-data" method="post">
+                                    <div>
+                                        <input name="file" id="file" type="file" multiple="multiple"/>
                                     </div>
-                                    <button type="submit">上传</button>
+                                    <button type="button" id="uploadBtn">上传</button>
                                 </form>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12 attach">
-                        <th:block th:if="${list == null || list.size() == 0}">
-                            <div class="row">
-                                <div class="col-md-4 text-center">
-                                    <div class="alert alert-warning">
-                                        目前还没有一个附件呢，你可以上传试试!
-                                    </div>
-                                </div>
-                            </div>
-                        </th:block>
-                        <th:block th:if="${list != null && list.size() > 0}">
-                            <th:block th:each="item : ${list}">
-                                <div class="col-md-2 text-center m-t-10">
-                                    <a th:href="${item.url}" target="_blank">
-                                        <img class="attach-img" style="height: 100px;width: 100px;"
-                                             th:src="@{${item.url}}"
-                                             th:title="${item.fileName}"/>
-                                    </a>
-                                    <div th:text="'使用地址为：' + ${item.url}"></div>
-<!--                                    <div class="clearfix m-t-10">-->
-<!--                                        <span class="attach-text" data-toggle="tooltip" data-placement="top"-->
-<!--                                              th:attr="data-original-title=${attach.fname}"-->
-<!--                                              th:text="${commons.substr(attach.fname, 12)}"></span>-->
-<!--                                    </div>-->
-<!--                                    <div class="clearfix">-->
-<!--                                        <button th:attr="url=${attach.fkey}" type="button"-->
-<!--                                                class="btn btn-warning btn-sm waves-effect waves-light m-t-5 copy">-->
-<!--                                            <i class="fa fa-copy"></i> <span>复制</span>-->
-<!--                                        </button>-->
-<!--                                        <button type="button"-->
-<!--                                                class="btn btn-danger btn-sm waves-effect waves-light m-t-5"-->
-<!--                                                th:onclick="'delAttach('+${attach.id}+');'">-->
-<!--                                            <i class="fa fa-trash-o"></i> <span>删除</span>-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-                                </div>
-                            </th:block>
+                        <div class="col-md-12 attach">
+                            <div class="col-md-10">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>name</th>
+                                            <th>url</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fileBody">
 
-                        </th:block>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div th:replace="_admin/footer :: footer-content"></div>
@@ -75,8 +50,46 @@
 <div th:replace="_admin/footer :: footer"></div>
 <script src="//cdn.bootcss.com/dropzone/4.3.0/min/dropzone.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.6.0/clipboard.min.js"></script>
-<script type="text/javascript" th:inline="javascript">
+<script>
+    $(function (){
+        getFileListData();
+    })
+    function getFileListData() {
+        $.ajax({
+            type: "GET",
+            url: "/_admin/get/upload/data",
+            success: function (response){
 
+                showFileList(response.data);
+
+            }
+        })
+    }
+    function showFileList(data) {
+        var tbodyTd = $("#fileBody").empty();
+        $.each(data,function (){
+            var trTd = $("<tr></tr>").append($("<td></td>").text(this.fileName)).append($("<td></td>").text(this.url));
+            tbodyTd.append(trTd);
+        })
+    }
+    $("#uploadBtn").click(function (){
+        var formData = new FormData();
+        formData.append("file",$("#file")[0].files[0]);
+        $.ajax({
+            type: "POST",
+            url: "/_admin/do/upload",
+            data: formData,
+            contentType: false,
+            dataType:"json",
+            processData: false,
+            mimeType:"multipart/form-data",
+            success: function (response){
+                alert(response.message);
+                getFileListData();
+            }
+        })
+    });
 </script>
 </body>
+
 </html>

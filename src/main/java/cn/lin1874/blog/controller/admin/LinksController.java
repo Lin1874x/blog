@@ -2,14 +2,12 @@ package cn.lin1874.blog.controller.admin;
 
 import cn.lin1874.blog.po.Links;
 import cn.lin1874.blog.service.LinksService;
+import cn.lin1874.blog.utils.ResultEntity;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,45 +15,68 @@ import java.util.List;
  * @author lin1874
  * @date 2021/6/28 - 22:18
  */
-@Controller
+@RestController
 public class LinksController {
 
     @Autowired
     LinksService linksService;
+
+    /**
+     * 获取友链数据
+     * @return
+     */
+    @GetMapping("/_admin/get/links/list")
+    public ResultEntity<List<Links>> getLinksList() {
+        return new ResultEntity<>(ResultEntity.SUCCESS,null, linksService.getAllLinks());
+    }
+
+    /**
+     * 修改友链
+     * @param links
+     * @return
+     */
     @PostMapping("/_admin/do/links/update")
-    public String doLinksUpdate(Links links) {
+    public ResultEntity doLinksUpdate(@RequestBody Links links) {
+        System.out.println(links);
         linksService.updateLinks(links);
-        return "redirect:/_admin/to/links";
+        return new ResultEntity(ResultEntity.SUCCESS,"修改成功",null);
     }
-    @GetMapping("/_admin/to/links/update")
-    public String toLinksUpdate(@RequestParam("id") Integer id,
-                                Model model) {
-        Links link = linksService.getLinksById(id);
-        model.addAttribute("link",link);
-        return "_admin/links_update";
+
+
+    /**
+     * 根据友链id返回友链信息用于修改
+     * @param id
+     * @return
+     */
+    @GetMapping("/_admin/get/links/update")
+    public ResultEntity<Links> toLinksUpdate(@RequestParam("id") Integer id) {
+        return new ResultEntity<>(ResultEntity.SUCCESS,null,linksService.getLinksById(id));
     }
-    @PostMapping("/_admin/do/links/save")
-    public String doLinksSave(Links links) {
+
+
+    /**
+     * 添加友链
+     * @param links
+     * @return
+     */
+    @PostMapping("/_admin/do/links/add")
+    public ResultEntity<String> doLinksSave(@RequestBody Links links) {
+        System.out.println(links);
         linksService.addLinks(links);
-        return "redirect:/_admin/to/links";
+        return new ResultEntity<>(ResultEntity.SUCCESS,"添加成功",null);
     }
+
+    /**
+     * 根据id删除友链
+     * @param id
+     * @return
+     */
     @GetMapping("/_admin/do/links/delete")
-    public String doLinksDelete(@RequestParam("id") Integer id) {
+    public ResultEntity doLinksDelete(@RequestParam("id") Integer id) {
         linksService.deleteLinksById(id);
-        return "redirect:/_admin/to/links";
+        return new ResultEntity<>(ResultEntity.SUCCESS,"删除成功",null);
     }
 
-    @GetMapping("/_admin/to/links/add")
-    public String toLinksAddPage() {
-        return "_admin/links_add";
-    }
-
-    @GetMapping("/_admin/to/links")
-    public String toLinksListPage(Model model) {
-        List<Links> linksList = linksService.getAllLinks();
-        model.addAttribute("links", linksList);
-        return "_admin/links_list";
-    }
 
 
 }

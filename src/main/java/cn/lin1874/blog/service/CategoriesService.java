@@ -1,6 +1,7 @@
 package cn.lin1874.blog.service;
 
 import cn.lin1874.blog.po.Categories;
+import cn.lin1874.blog.utils.ResultEntity;
 
 import java.util.List;
 
@@ -43,4 +44,11 @@ public interface CategoriesService {
      * @return
      */
     Categories getCategoriesById(Integer id);
+
+    /**
+     * 保存categories
+     * @param categories
+     * @return
+     */
+    ResultEntity saveCategory(Categories categories);
 }

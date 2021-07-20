@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h2 class="page-title">友链管理</h2>
-                        <a th:href="@{/_admin/to/links/add}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加</a>
+                        <button id="addBtn" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加</button>
                     </div>
                     <br/>
                     <div class="col-md-12">
@@ -24,30 +24,8 @@
                                 <th>操作</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <th:block th:each="link : ${links}">
-                                <tr>
-                                    <td>
-                                        <th:block th:text="${link.name}"/>
-                                    </td>
-
-                                    <td><th:block th:text="${link.introduce}"/></td>
-                                    <td><th:block th:text="${link.url}"/></td>
-                                    <td><th:block th:text="${link.pic}"/></td>
-
-                                    <td>
-                                        <a th:href="@{/_admin/to/links/update(id=${link.id})}"
-                                           class="btn btn-primary btn-sm waves-effect waves-light m-b-5"><i
-                                                class="fa fa-edit"></i> <span>编辑</span></a>
-                                        <a th:href="@{/_admin/do/links/delete(id=${link.id})}"
-                                           class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i
-                                                class="fa fa-trash-o"></i> <span>删除</span></a>
-                                        <a class="btn btn-warning btn-sm waves-effect waves-light m-b-5" th:href="@{'/blog/links'}"
-                                           target="_blank"><i
-                                                class="fa fa-rocket"></i> <span>预览</span></a>
-                                    </td>
-                                </tr>
-                            </th:block>
+                            <tbody id="tbody">
+                            <!--内容-->
 
                             </tbody>
                         </table>
@@ -60,5 +38,209 @@
     </div>
 </div>
 <div th:replace="_admin/footer :: footer"></div>
+
+<!-- AddModal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">友链添加</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-bordered">
+                    <form id="addForm">
+                        <div class="form-group">
+                            <label>name</label>
+                            <input type="text" class="form-control" id="addName" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label >introduce</label>
+                            <input type="text" class="form-control" id="addIntroduce" name="introduce">
+                        </div>
+                        <div class="form-group">
+                            <label >url</label>
+                            <input type="text" class="form-control" id="addUrl" name="url">
+                        </div>
+                        <div class="form-group">
+                            <label >pic</label>
+                            <input type="text" class="form-control" id="addPic" name="pic">
+                        </div>
+                    </form>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="submitAddBtn" type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End AddModal -->
+<!-- updateModal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">友链修改</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-bordered">
+                    <form id="updateForm">
+                        <div class="form-group">
+                            <label>name</label>
+                            <input type="text" class="form-control" id="updateName" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label >introduce</label>
+                            <input type="text" class="form-control" id="updateIntroduce" name="introduce">
+                        </div>
+                        <div class="form-group">
+                            <label >url</label>
+                            <input type="text" class="form-control" id="updateUrl" name="url">
+                        </div>
+                        <div class="form-group">
+                            <label >pic</label>
+                            <input type="text" class="form-control" id="updatePic" name="pic">
+                        </div>
+                    </form>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="submitUpdateBtn" type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End AddModal -->
 </body>
+<script>
+    $(function (){
+       getLinks();
+    });
+    //为编辑按钮绑定事件
+    $(document).on("click",".updateBtn",function (){
+        $("#updateModal").modal('show');
+        $.ajax({
+            type: "GET",
+            url: "/_admin/get/links/update",
+            data: "id=" + $(this).attr("linkId"),
+            success: function (response) {
+                //将返回的结果显示在模态框上
+                $("#updateName").val(response.data.name);
+                $("#updateIntroduce").val(response.data.introduce);
+                $("#updateUrl").val(response.data.url);
+                $("#updatePic").val(response.data.pic);
+                $("#submitUpdateBtn").attr("linkId",response.data.id);
+
+            }
+        });
+    });
+    //为编辑提交按钮绑定事件
+    $("#submitUpdateBtn").click(function (){
+        var data = {
+            "id": $(this).attr("linkId"),
+            "name": $("#updateName").val(),
+            "introduce": $("#updateIntroduce").val(),
+            "url": $("#updateUrl").val(),
+            "pic": $("#updatePic").val()
+        }
+        console.log(data);
+        $.ajax({
+            type: "POST",
+            url: "/_admin/do/links/update",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=UTF-8",
+            success: function (response){
+                $("#updateModal").modal('hide');
+                alert(response.message);
+                getLinks();
+            }
+        })
+    });
+    //为删除按钮绑定事件
+    $(document).on("click",".deleteBtn",function (){
+        var vis = confirm("确定要删除友链："+ $(this).parent().parent().children("td:eq(2)").text() + "吗？");
+        if (vis == true) {
+            $.ajax({
+                type: "GET",
+                url: "/_admin/do/links/delete",
+                data: "id=" + $(this).attr("linkId"),
+                success: function (response) {
+                    alert(response.message);
+                    getLinks();
+                }
+            })
+        }
+    });
+    //获取列表数据
+    function getLinks() {
+        $.ajax({
+            type: "GET",
+            url: "/_admin/get/links/list",
+            success: function (response) {
+                clearLinksList();
+                showLinksList(response);
+            }
+        })
+    }
+    //打开添加模态框
+    $("#addBtn").click(function (){
+        $("#addModal").modal('show');
+        $("#addForm")[0].reset();
+    });
+    //为添加按钮绑定事件
+    $("#submitAddBtn").click(function (){
+        var data = {
+            "name": $("#addName").val(),
+            "introduce": $("#addIntroduce").val(),
+            "url": $("#addUrl").val(),
+            "pic": $("#addPic").val()
+        }
+        $.ajax({
+            type: "POST",
+            url: "/_admin/do/links/add",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=UTF-8",
+            success: function (response) {
+                $("#addModal").modal('hide');
+                alert(response.message);
+                getLinks();
+            }
+        })
+    });
+    //清空tbody内容
+    function clearLinksList() {
+        $("tbody").empty();
+    }
+    //显示links列表
+    function showLinksList(response) {
+        var list = response.data;
+        $.each(list, function (index, item){
+            var tr = $("<tr></tr>");
+            var name = $("<td></td>").text(item.name);
+            var introduce = $("<td></td>").text(item.introduce);
+            var url = $("<td></td>").text(item.url);
+            var pic = $("<td></td>").text(item.pic);
+
+            var buttonTd = $("<td></td>");
+
+            var updateBtn = $("<button></button>").addClass("btn btn-primary btn-sm waves-effect waves-light m-b-5 updateBtn").text("编辑");
+            //为修改按钮添加一个id属性
+            updateBtn.attr("linkId",item.id);
+
+            var deleteBtn = $("<button></button>").addClass("btn btn-danger btn-sm waves-effect waves-light m-b-5 deleteBtn").text("删除");
+            //为删除按钮添加一个id属性
+            deleteBtn.attr("linkId",item.id);
+
+            buttonTd.append(updateBtn).append(deleteBtn);
+
+            tr.append(name).append(introduce).append(url).append(pic).append(buttonTd).appendTo($("#tbody"));
+
+        });
+    }
+
+</script>
 </html>

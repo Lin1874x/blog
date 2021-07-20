@@ -34,4 +34,11 @@ public class MyWebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations("file:"+System.getProperty("user.dir")+"/upload/");
     }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+
+    }
+
+
 }

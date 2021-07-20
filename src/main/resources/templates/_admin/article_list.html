@@ -16,7 +16,6 @@
                             <thead>
                             <tr>
                                 <th width="25%">文章标题</th>
-<!--                                <th width="8%">类型</th>-->
                                 <th width="15%">发布时间</th>
                                 <th width="15%">最新修改时间</th>
                                 <th>浏览量</th>
@@ -26,41 +25,26 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <th:block th:each="post : ${articles.list}">
-                                <tr th:cid="${post.id}">
-                                    <td>
-                                        <a th:href="@{'/admin/article/'+${post.id}}" th:text="${post.title}"></a>
-                                    </td>
-
-                                    <td><th:block th:text="${#dates.format(post.createdTime, 'yyyy-MM-dd HH:mm:ss')}"/></td>
-                                    <td><th:block th:text="${#dates.format(post.modifiedTime, 'yyyy-MM-dd HH:mm:ss')}"/></td>
-                                    <td><th:block th:text="${post.hits}"/></td>
-                                    <td><th:block th:text="${post.categories}"/></td>
-                                    <td>
-                                        <th:block th:if="${post.status == 1}">
-                                            <span class="label label-success">已发布</span>
-                                        </th:block>
-                                       <th:block th:if="${post.status == 0}">
-                                           <span class="label label-default">草稿</span>
-                                       </th:block>
-                                    </td>
-                                    <td>
-                                        <a th:href="@{/_admin/to/article/update(id=${post.id},pageNum=${articles.getPageNum()})}"
-                                           class="btn btn-primary btn-sm waves-effect waves-light m-b-5"><i
-                                                class="fa fa-edit"></i> <span>编辑</span></a>
-                                        <a th:href="@{/_admin/do/article/delete(id=${post.id},pageNum=${articles.getPageNum()})}"
-                                           class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i
-                                                class="fa fa-trash-o"></i> <span>删除</span></a>
-                                        <a class="btn btn-warning btn-sm waves-effect waves-light m-b-5" th:href="@{'/blog/article/' + ${post.id}}"
-                                           target="_blank"><i
-                                                class="fa fa-rocket"></i> <span>预览</span></a>
-                                    </td>
-                                </tr>
-                            </th:block>
+<!--                            <th:block th:each="post : ${articles.list}">-->
+<!--                                    <td>-->
+<!--                                        <a th:href="@{/_admin/to/article/update(id=${post.id},pageNum=${articles.getPageNum()})}"-->
+<!--                                           class="btn btn-primary btn-sm waves-effect waves-light m-b-5"><i-->
+<!--                                                class="fa fa-edit"></i> <span>编辑</span></a>-->
+<!--                                        <a th:href="@{/_admin/do/article/delete(id=${post.id},pageNum=${articles.getPageNum()})}"-->
+<!--                                           class="btn btn-danger btn-sm waves-effect waves-light m-b-5"><i-->
+<!--                                                class="fa fa-trash-o"></i> <span>删除</span></a>-->
+<!--                                        <a class="btn btn-warning btn-sm waves-effect waves-light m-b-5" th:href="@{'/blog/article/' + ${post.id}}"-->
+<!--                                           target="_blank"><i-->
+<!--                                                class="fa fa-rocket"></i> <span>预览</span></a>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                            </th:block>-->
 
                             </tbody>
                         </table>
-                        <div th:replace="comm/macros :: pageAdminNav(${articles})"></div>
+                        <nav id="nav" aria-label="Page navigation">
+
+                        </nav>
                     </div>
                 </div>
                 <div th:replace="_admin/footer :: footer-content"></div>
@@ -70,27 +54,120 @@
 </div>
 <div th:replace="_admin/footer :: footer"></div>
 <script type="text/javascript">
-    /*<![CDATA[*/
-    var tale = new $.tale();
-    function delPost(cid) {
-        tale.alertConfirm({
-            title:'确定删除该文章吗?',
-            then: function () {
-                tale.post({
-                    url : '/admin/article/delete',
-                    data: {cid: cid},
-                    success: function (result) {
-                        if(result && result.code == 'success'){
-                            tale.alertOkAndReload('文章删除成功');
-                        } else {
-                            tale.alertError(result.msg || '文章删除失败');
-                        }
-                    }
-                });
-            }
-        });
+    //获取url中的参数
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
     }
-    /*]]>*/
+    function getPageNumFromUrl() {
+        var pageNum = $.getUrlParam('pn');
+        if (pageNum == null) {
+            pageNum = 1;
+        }
+        return pageNum;
+    }
+    $(function (){
+        var pageNum = getPageNumFromUrl();
+        getDataWithpn(pageNum);
+    })
+    function getDataWithpn(pn) {
+        $.ajax({
+            type: "GET",
+            url: "/_admin/get/article/list",
+            data: "pn="+pn,
+            success: function (response) {
+                showArticleTable(response);
+                nav_pn(response);
+            }
+        })
+    }
+    function showArticleTable(response) {
+        $("tbody").empty();
+        var pageInfo = response.data;
+        $.each(pageInfo.list,function () {
+            var tr = $("<tr></tr>");
+            var titleTd = $("<td></td>").append($("<a></a>").attr("href","/admin/article/" + this.id).text(this.title));
+            var createdTimeTd = $("<td></td>").text(this.createdTime);
+            var modifyTimeTd = $("<td></td>").text(this.modifiedTime);
+            var hitsTd = $("<td></td>").text(this.hits);
+            var categoryTd = $("<td></td>").text(this.category);
+            var statusTd = $("<td></td>").text(this.status == "0" ? "草稿":"已发布");
+
+            var buttonTd = $("<td></td>");
+            var updateBtn = $("<button></button>").attr("articleId",this.id).addClass("btn btn-primary btn-sm waves-effect waves-light m-b-5").append($("<i></i>").addClass("fa fa-edit")).append($("<span></span>").text("编辑"));
+            var deleteBtn = $("<button></button>").attr("articleId",this.id).addClass("btn btn-danger btn-sm waves-effect waves-light m-b-5").append($("<i></i>").addClass("fa fa-trash-o")).append($("<span></span>").text("删除"));
+            var previewBtn = $("<button></button>").attr("articleId",this.id).addClass("btn btn-warning btn-sm waves-effect waves-light m-b-5").append($("<i></i>").addClass("fa fa-rocket")).append($("<span></span>").text("预览"));
+
+            buttonTd.append(updateBtn).append(deleteBtn).append(previewBtn);
+
+            tr.append(titleTd).append(createdTimeTd).append(modifyTimeTd).append(hitsTd)
+                .append(categoryTd).append(statusTd).append(buttonTd).appendTo($("tbody"));
+        })
+    }
+    //编辑按钮
+    $(document).on("click",".btn-primary",function (){
+        location.href = "/_admin/to/article/update?id="+$(this).attr("articleId");
+    })
+//    /_admin/do/article/delete
+    //删除按钮
+    $(document).on("click",".btn-danger",function (){
+        var vis = confirm("你确定要删除文章<<" + $(this).parent().parent().children().eq(0).text() + ">>吗?")
+        if (vis == true) {
+            $.ajax({
+                type: "GET",
+                url: "/_admin/do/article/delete",
+                data: "id=" + $(this).attr("articleId"),
+                success: function (response) {
+                    alert(response.message);
+                    var pageNum = getPageNumFromUrl();
+                    getDataWithpn(pageNum);
+                }
+            })
+        }
+    })
+    function nav_pn(response) {
+        $("nav").empty();
+        var pageInfo = response.data;
+
+        var ul = $("<ul></ul>").addClass("pagination");
+        var preLi = $("<li></li>").append($("<a></a>").attr("href","/_admin/to/article/list?pn=" + (pageInfo.pageNum - 1)).append($("<span></span>").text("<")));
+        if (pageInfo.isFirstPage) {
+            preLi.addClass("disabled");
+            preLi.children().eq(0).attr("href","#");
+        }
+        ul.append(preLi);
+        $.each(pageInfo.navigatepageNums,function (){
+            var navigatepageLi = $("<li></li>").append($("<a></a>").attr("href","/_admin/to/article/list?pn=" + (this)).append($("<span></span>").text(this)));
+            if (this == pageInfo.pageNum) {
+                navigatepageLi.addClass("active");
+            }
+            ul.append(navigatepageLi);
+        })
+        var nextLi = $("<li></li>").append($("<a></a>").attr("href","/_admin/to/article/list?pn=" + (pageInfo.pageNum + 1)).append($("<span></span>").text(">")));
+        if (pageInfo.isLastPage) {
+            nextLi.addClass("disabled");
+            nextLi.children().eq(0).attr("href","#");
+        }
+        ul.append(nextLi).appendTo($("nav"));
+
+    }
+
 </script>
 </body>
+<!--<nav aria-label="Page navigation">-->
+<!--    <ul class="pagination">-->
+<!--        <li>-->
+<!--            <a href="#" aria-label="Previous">-->
+<!--                <span aria-hidden="true">&laquo;</span>-->
+<!--            </a>-->
+<!--        </li>-->
+<!--        <li><a href="#">1</a></li>-->
+<!--        <li>-->
+<!--            <a href="#" aria-label="Next">-->
+<!--                <span aria-hidden="true">&raquo;</span>-->
+<!--            </a>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</nav>-->
 </html>

@@ -1,6 +1,9 @@
 package cn.lin1874.blog.service;
 
 import cn.lin1874.blog.po.User;
+import cn.lin1874.blog.utils.ResultEntity;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * @author lin1874
@@ -13,6 +16,6 @@ public interface UserService {
      * @param password
      * @return
      */
-    User login(String username, String password);
+    ResultEntity login(String username, String password, HttpSession session);
 
 }

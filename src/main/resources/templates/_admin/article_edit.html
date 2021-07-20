@@ -33,24 +33,26 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h4 class="page-title">
-                                发布文章
+<!--                                发布文章-->
                         </h4>
                     </div>
                     <div class="col-md-12">
-                        <form id="articleForm" method="post" th:action="@{/_admin/article/save}" role="form" novalidate="novalidate">
+                        <form id="articleForm" method="post"  role="form" novalidate="novalidate">
 
                             <input type="hidden" name="status"  id="status"/>
-                            <input type="hidden" name="content" id="content-editor"/>
+                            <input type="hidden" name="id" id="articleId">
+                            <input type="hidden" name="authorId" id="authorId">
+                            <input type="hidden" name="hits" id="hits">
+
 
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <input type="text" class="form-control" placeholder="请输入文章标题（必须）" name="title"
-                                       required="required"
+                                       required="required" id="title"
                                        aria-required="true"/>
                             </div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
-                                <input type="text" class="form-control" placeholder="展示图地址" name="titlePic"/>
+                                <input type="text" id="titlePic" class="form-control" placeholder="展示图地址" name="titlePic"/>
                             </div>
-
                                 <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                     <input name="tags" id="tags"  type="text" class="form-control"
                                            placeholder="请填写文章标签,如有多个请以,号分开"/>
@@ -59,62 +61,40 @@
                                 <div class="form-group col-md-6" >
                                     <select id="categories-sel"   class="select2 form-control" name="categories"
                                             data-placeholder="请选择分类...">
-                                        <th:block th:if="${null == categories}">
-                                            <option value="1" selected="selected">默认分类</option>
-                                        </th:block>
-                                        <th:block th:if="${null != categories}">
-                                            <th:block th:each="c : ${categories}">
-                                                <option th:value="${c.id}" th:text="${c.name}"></option>
-                                            </th:block>
-                                        </th:block>
+<!--                                        <th:block th:if="${null == categories}">-->
+<!--                                            <option value="1" selected="selected">默认分类</option>-->
+<!--                                        </th:block>-->
+<!--                                        <th:block th:if="${null != categories}">-->
+<!--                                            <th:block th:each="c : ${categories}">-->
+<!--                                                <option th:value="${c.id}" th:text="${c.name}"></option>-->
+<!--                                            </th:block>-->
+<!--                                        </th:block>-->
                                     </select>
                                 </div>
 
                             <div class="clearfix"></div>
 
                             <div class="form-group col-md-12" style="padding: 0 10px 0 0;">
-                                <input type="text" class="form-control" placeholder="请输入文章的简介" name="shortContent"/>
+                                <input id="shortContent" type="text" class="form-control" placeholder="请输入文章的简介" name="shortContent"/>
                             </div>
 
                             <div class="clearfix"></div>
                             <div id="my-editormd" >
-<!--                                <textarea id="my-text" name="my-text" style="display:none;" class="markdown-textarea"></textarea>-->
-<!--                                &lt;!&ndash; 注意：name属性的值&ndash;&gt;-->
-<!--                                <textarea id="text" name="text" style="display:none;" ></textarea>-->
                                 <div id="article-content">
                                     <textarea name="content" id="content" style="display:none;"> </textarea>
                                 </div>
                             </div>
 
 
-<!--                            <div class="form-group col-md-3 col-sm-4" id="comment-div">-->
-<!--                                <label class="col-sm-4">开启评论</label>-->
-<!--                                <div class="col-sm-8">-->
-<!--                                    <div th:class="${contents!=null and contents.allowComment!=null }?'toggle toggle-success allow-'+${contents.allowComment}:'toggle toggle-success allow-true'"-->
-<!--                                         onclick="allow_comment(this);"></div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
-
                             <div class="clearfix"></div>
 
                             <div class="text-right">
-                                <button type="submit"  class="btn btn-primary waves-effect waves-light" th:onclick="save()">
+                                <button type="button" id="publicBtn"  class="btn btn-primary waves-effect waves-light">
                                     保存文章
                                 </button>
-                                <button type="submit"  class="btn btn-warning waves-effect waves-light" th:onclick="tmp()">
+                                <button type="button" id="tmpBtn"  class="btn btn-warning waves-effect waves-light">
                                     存为草稿
                                 </button>
-                                <script>
-                                    function save() {
-                                        $("#status").val('1');
-                                        return true;
-                                    };
-                                    function tmp() {
-                                        $("#status").val('0');
-                                        return true;
-                                    };
-                                </script>
                             </div>
                         </form>
                     </div>
@@ -126,7 +106,100 @@
 </div>
 <div th:replace="_admin/footer :: footer"></div>
 <script type="text/javascript">
+    //获取url中的参数
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+    //显示分类下拉列表
+    function showCategoryData() {
+        $.ajax({
+           type: "GET",
+           url: "/_admin/do/category/list",
+           success: function (response){
+
+               var data = response.data;
+               $.each(data,function (){
+                    $("<option></option>").attr("value",this.id).text(this.name).appendTo($("#categories-sel"));
+               })
+               //selected="selected"
+
+           }
+        })
+    }
     $(function() {
+        //获取所有分类并显示
+        showCategoryData();
+        var id = $.getUrlParam('id');
+        if (id == null) {
+            $(".page-title").text("发布文章");
+        } else {
+            $(".page-title").text("编辑文章");
+            //获取编辑文章的数据
+            $.ajax({
+                type: "GET",
+                url: "/_admin/get/articlevo/data",
+                data: "id=" + id,
+                success: function (response) {
+                    console.log(response);
+                    showArticleDataToEdit(response.data);
+                }
+            })
+        }
+        markdown_init();
+
+
+    });
+    //显示文章数据
+    function showArticleDataToEdit(data){
+
+        $("#title").val(data.title);
+        $("#titlePic").val(data.titlePic);
+        $("#tags").val(data.tags);
+        $("#categories-sel option[value=" + data.categories +"]").attr("selected","selected");
+        $("#shortContent").val(data.shortContent);
+        $("#content").val(data.content);
+        $("#articleId").val(data.id);
+        $("#authorId").val(data.authorId);
+        $("#hits").val(data.hits);
+
+    }
+    $("#publicBtn").click(function (){
+        $("#status").val(1);
+        requestSave();
+    })
+    $("#tmpBtn").click(function (){
+        $("#status").val(0);
+        requestSave();
+    })
+    function requestSave() {
+        if ($.getUrlParam('id') != null) {
+            //更新请求
+            $.ajax({
+                type: "POST",
+                url: "/_admin/do/article/update",
+                data: $("#articleForm").serialize(),
+                success: function (response) {
+                    alert(response.message);
+                    location.href = "/_admin/to/article/list";
+                }
+            })
+        } else {
+            //添加请求
+            $.ajax({
+                type: "POST",
+                url: "/_admin/do/article/add",
+                data: $("#articleForm").serialize(),
+                success: function (response) {
+                    alert(response.message);
+                    location.href = "/_admin/to/article/list";
+                }
+            })
+        }
+    }
+    //markdown初始化
+    function markdown_init() {
         //这是一个最简单的Editormd配置，往后我们要修改Editormd的
         //功能或者样式，就改这里的配置就可以了
         editormd("article-content", {
@@ -155,7 +228,7 @@
             toolbarIcons : function() {
                 return ["undo","redo","|",
                     "bold","del","italic","quote","ucwords","uppercase","lowercase","|",
-                     "h1","h2","h3","h4","h5","h6","|",
+                    "h1","h2","h3","h4","h5","h6","|",
                     "list-ul","list-ol","hr","|",
                     "link","reference-link","image","code","preformatted-text",
                     "code-block","table","datetime","emoji","html-entities","pagebreak","|",
@@ -166,9 +239,7 @@
             // 这里的自定义功能就好比，Vue 组件
 
         });
-
-
-    });
+    }
 
 </script>
 <script th:src="@{/_admin/plugins/tagsinput/jquery.tagsinput.min.js}"></script>

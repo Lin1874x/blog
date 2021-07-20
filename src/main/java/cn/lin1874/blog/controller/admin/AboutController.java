@@ -1,29 +1,25 @@
 package cn.lin1874.blog.controller.admin;
 
 import cn.lin1874.blog.po.About;
+import cn.lin1874.blog.utils.ResultEntity;
 import cn.lin1874.blog.vo.AboutVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author lin1874
  * @date 2021/7/1 - 10:38
  */
-@Controller
+@RestController
 public class AboutController {
     /**
-     * 请求转发到关于页编辑页面
-     * @param model
+     * 获取关于页的信息
      * @return
      */
-    @GetMapping("/_admin/to/about/edit")
-    public String toAboutEdit(Model model) {
-        model.addAttribute("text",About.text);
-        return "_admin/about_edit";
+    @GetMapping("/_admin/get/data/about")
+    public ResultEntity<String> getAboutData() {
+        return new ResultEntity<>(ResultEntity.SUCCESS,"操作成功",About.text);
     }
+
 
     /**
      * 更新关于页
@@ -31,10 +27,8 @@ public class AboutController {
      * @return
      */
     @PostMapping("/_admin/do/about/update")
-    public String doAboutUpdate(AboutVo aboutVo) {
-        if (aboutVo.getText() != null) {
-            About.text = aboutVo.getText();
-        }
-        return "redirect:/_admin/to/about/edit";
+    public ResultEntity<String> doAboutUpdate(@RequestBody AboutVo aboutVo) {
+        About.text = aboutVo.getText();
+        return new ResultEntity<>(ResultEntity.SUCCESS,"操作成功",About.text);
     }
 }

@@ -1,6 +1,7 @@
 package cn.lin1874.blog.service;
 
 import cn.lin1874.blog.po.Upload;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface UploadService {
 
-    Integer addUpload(Upload upload);
+    Integer addUpload(MultipartFile file);
 
     List<Upload> getAllFile();
 

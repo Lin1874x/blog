@@ -2,6 +2,7 @@ package cn.lin1874.blog.service.impl;
 
 import cn.lin1874.blog.mapper.ArticleMapper;
 import cn.lin1874.blog.po.Article;
+import cn.lin1874.blog.po.User;
 import cn.lin1874.blog.service.ArticleService;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageHelper;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,18 +27,26 @@ public class ArticleServiceImpl implements ArticleService {
     ArticleMapper articleMapper;
 
     @Override
-    public Integer addArticle(Article article) {
-        int a = 5 / 0;
+    public Integer addArticle(Article article,HttpSession session) {
+
+        User user = (User) session.getAttribute("loginAcct");
+        article.setAuthorId(user.getId());
+        article.setCreatedTime(new Date());
+        article.setModifiedTime(new Date());
+        article.setHits(0);
         return articleMapper.addArticle(article);
     }
 
-    @Override
-    public PageInfo<Article> getArticleByUserIdOrderByModifiedTime(Integer id, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
-        List<Article> articles = articleMapper.getArticleByUserIdOrderByModifiedTime(id);
-        PageInfo<Article> pageInfo = new PageInfo<>(articles,5);
-        return pageInfo;
-    }
+//    @Override
+//    public PageInfo<Article> getArticleByUserIdOrderByModifiedTime(Integer pageNum, HttpSession session) {
+//        final int pageSize = 5;
+//        User user = (User) session.getAttribute("loginAcct");
+//        if (user == null) throw new RuntimeException();
+//        PageHelper.startPage(pageNum,pageSize);
+//        List<Article> articles = articleMapper.getArticleByUserIdOrderByModifiedTime(user.getId());
+//        PageInfo<Article> pageInfo = new PageInfo<>(articles,5);
+//        return pageInfo;
+//    }
 
     @Override
     public Integer deleteArticleById(Integer id) {
@@ -48,7 +59,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageInfo<ArticleVo> getArticleVoOrderByModifiedTime(Integer pageNum, Integer pageSize) {
+    public PageInfo<ArticleVo> getArticleVoOrderByModifiedTime(Integer pageNum) {
+        final Integer pageSize = 5;
         PageHelper.startPage(pageNum,pageSize);
         List<ArticleVo> articles = articleMapper.getArticleVoOrderByModifiedTime();
         PageInfo<ArticleVo> pageInfo = new PageInfo<>(articles,5);
@@ -62,6 +74,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Integer updateArticle(Article article) {
+        article.setModifiedTime(new Date());
+
         return articleMapper.updateArticle(article);
     }
 

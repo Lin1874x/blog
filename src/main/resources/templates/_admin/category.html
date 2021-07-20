@@ -16,32 +16,23 @@
                             <div class="panel-heading">
                                 <h1 class="panel-title">分类列表</h1>
                             </div>
-                            <div class="panel-body">
-                                <th:block th:each="c : ${categories}">
+                            <div class="panel-body" id="body">
                                     <div class="btn-group m-b-10">
-                                        <th:block th:if="${c.name == '默认分类'}">
-                                            <button type="button"
-                                                    th:class="'btn btn-success waves-effect waves-light'">
-                                               <th:block th:text="${c.name}"/>
-                                            </button>
-                                        </th:block>
-                                        <th:block th:if="${c.name != '默认分类'}">
-                                            <button type="button"
-                                                    th:class="'btn btn-default dropdown-toggle waves-effect waves-light'"
-                                                    data-toggle="dropdown" aria-expanded="false">
-                                                <th:block th:text="${c.name}"/>
-                                                <span
-                                                        class="caret"></span></button>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li><a href="javascript:void(0)" th:attr="id=${c.id},name=${c.name}"
-                                                       class="edit-category">修改</a>
-                                                </li>
-                                                <li><a th:href="@{/_admin/do/category/delete(id=${c.id})}"
-                                                       class="del-category">删除</a></li>
-                                            </ul>
-                                        </th:block>
+
+<!--                                        <button type="button"-->
+<!--                                                class="'btn btn-default dropdown-toggle waves-effect waves-light'"-->
+<!--                                                data-toggle="dropdown" >-->
+<!--                                                默认分类-->
+<!--                                                <span class="caret"></span>-->
+<!--                                        </button>-->
+<!--                                            <ul class="dropdown-menu" role="menu">-->
+<!--                                                <li><a href="javascript:void(0)"-->
+<!--                                                       class="edit-category">修改</a>-->
+<!--                                                </li>-->
+<!--                                                <li><a-->
+<!--                                                       class="del-category">删除</a></li>-->
+<!--                                            </ul>-->
                                     </div>
-                                </th:block>
                             </div>
                         </div>
                     </div>
@@ -49,13 +40,13 @@
                     <div class="col-md-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <form id="cform" class="form-inline" role="form" method="post" th:action="@{/_admin/do/category/save}">
+                                <form id="cform" class="form-inline" role="form" >
                                     <input type="hidden" id="id" name="id"/>
-                                    <input type="hidden" id="authorId" name="authorId" th:value="${session.login_user.id}"/>
+                                    <input type="hidden" id="authorId" name="authorId" />
                                     <div class="form-group">
                                         <input type="text" class="form-control" name="name" id="name" placeholder="请输入分类名称"/>
                                     </div>
-                                    <button id="save-category-btn" type="submit"
+                                    <button id="saveBtn" type="button"
                                             class="btn btn-success waves-effect waves-light m-l-10">保存分类
                                     </button>
                                 </form>
@@ -70,13 +61,89 @@
 </div>
 <div th:replace="_admin/footer :: footer"></div>
 <script type="text/javascript">
-
-    $('.edit-category').click(function () {
-        var id = $(this).attr('id');
-        var name = $(this).attr('name');
-        $('#cform #id').val(id);
-        $('#cform #name').val(name);
+    $(function (){
+        getCategoryList();
+    })
+    function getCategoryList() {
+        $.ajax({
+            type: "GET",
+            url: "/_admin/do/category/list",
+            success: function (response){
+                showCategoryList(response);
+            }
+        })
+    }
+    //列表显示
+    function showCategoryList(response){
+        $("#body").empty();
+        var list = response.data;
+        $("#authorId").val(list[0].authorId);
+        $.each(list,function (){
+            var div = $("<div></div>").addClass("btn-group m-b-10");
+            var a = $("<button></button>").attr("type","button")
+                .addClass("btn btn-default dropdown-toggle waves-effect waves-light")
+                .attr("data-toggle","dropdown").text(this.name).append($("<span></span>").addClass("caret"));
+            var b = $("<ul></ul>").addClass("dropdown-menu").attr("role","menu")
+                .append($("<li></li>").append($("<a></a>").attr("categoryName",this.name).attr("categoryId",this.id).attr("authorId",this.authorId).attr("href","javascript:void(0);").addClass("edit-category").text("修改")))
+                .append($("<li></li>").append($("<a></a>").attr("categoryName",this.name).attr("categoryId",this.id).attr("authorId",this.authorId).attr("href","javascript:void(0);").addClass("del-category").text("删除")));
+            div.append(a).append(b).appendTo($("#body"));
+        });
+    }
+    //修改
+    $(document).on("click",".edit-category",function (){
+        var categoryId = $(this).attr("categoryId");
+        var authorId = $(this).attr("authorId");
+        var name = $(this).attr("categoryName");
+        $("#id").val(categoryId);
+        $("#authorId").val(authorId);
+        $("#name").val(name);
     });
+    $("#saveBtn").click(function (){
+        $.ajax({
+            type: "POST",
+            url: "/_admin/do/category/save",
+            data: $("#cform").serialize(),
+            success: function (response) {
+                if (response.result == 100) {
+                    getCategoryList();
+                    alert(response.message);
+                    //清空表单
+                    $("#id").val('');
+                    $("#name").val('');
+                } else {
+                    alert("错误提示");
+                }
+            }
+        })
+    })
+    //删除
+    $(document).on("click",".del-category",function (){
+        var categoryId = $(this).attr("categoryId");
+        var authorId = $(this).attr("authorId");
+        var name = $(this).attr("categoryName");
+        var vis = confirm("确定要删除分类:" + name);
+        if (vis == true) {
+            $.ajax({
+                type: "GET",
+                url: "/_admin/do/category/delete",
+                data: "id=" + categoryId,
+                success: function (response) {
+                    if (response.result == 100) {
+                        alert(response.message);
+                        getCategoryList();
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            })
+        }
+    });
+    // $('.edit-category').click(function () {
+    //     var id = $(this).attr('id');
+    //     var name = $(this).attr('name');
+    //     $('#cform #id').val(id);
+    //     $('#cform #name').val(name);
+    // });
 
 </script>
 </body>

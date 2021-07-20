@@ -26,9 +26,9 @@
                article.createdTime createdTime,article.modifiedTime modifiedTime,
                article.content content,article.authorId authorId,article.tags tags,
                article.categories categories,article.hits hits,article.shortContent shortContent,
-               user.nickname,categories.name category
+               user.nickname,categories.name category,status
         from article,user,categories
-        where article.status = 1 and article.authorId = user.id and categories.id = article.categories
+        where article.authorId = user.id and categories.id = article.categories
         order by modifiedTime desc
     </select>
 
@@ -39,7 +39,7 @@
                article.categories categories,article.hits hits,article.shortContent shortContent,
                user.nickname,categories.name category
         from article,user,categories
-        where article.id = #{id} and article.status = 1 and article.authorId = user.id and categories.id = article.categories
+        where article.id = #{id} and article.authorId = user.id and categories.id = article.categories
     </select>
     <select id="getArticleByCategoriesId" resultType="cn.lin1874.blog.po.Article">
         select *
@@ -51,7 +51,6 @@
         update `article`
         set `title` = #{title},
         `titlePic` = #{titlePic},
-        `createdTime` = #{createdTime},
         `modifiedTime` = #{modifiedTime},
         `content` = #{content},
         `authorId` = #{authorId},

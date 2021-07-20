@@ -3,10 +3,13 @@ package cn.lin1874.blog.service.impl;
 import cn.lin1874.blog.mapper.UserMapper;
 import cn.lin1874.blog.po.User;
 import cn.lin1874.blog.service.UserService;
+import cn.lin1874.blog.utils.EncodeUtils;
+import cn.lin1874.blog.utils.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -20,12 +23,14 @@ public class UserServiceImpl  implements UserService {
     UserMapper userMapper;
 
     @Override
-    public User login(String username, String password) {
-        List<User> userList = userMapper.getUserByUsernameAndPassword(username, password);
-        if (userList == null || userList.size() == 0) {
-            return null;
+    public ResultEntity login(String username, String password, HttpSession session) {
+        String encoded = EncodeUtils.md5(password);
+        User user = userMapper.getUserByUsernameAndPassword(username, encoded);
+        if (user == null) {
+            return new ResultEntity(ResultEntity.FAILED,"用户名或密码错误",null);
         } else {
-            return userList.get(0);
+            session.setAttribute("loginAcct",user);
+            return new ResultEntity(ResultEntity.SUCCESS,null,null);
         }
     }
 }

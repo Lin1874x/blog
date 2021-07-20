@@ -4,6 +4,7 @@ import cn.lin1874.blog.po.Article;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -16,16 +17,13 @@ public interface ArticleService {
      * @param article
      * @return
      */
-    Integer addArticle(Article article);
+    Integer addArticle(Article article,HttpSession session);
 
     /**
      * 通过用户id查询文章且根据修改时间排序
-     * @param id
-     * @param pageNum
-     * @param pageSize
      * @return
      */
-    PageInfo<Article> getArticleByUserIdOrderByModifiedTime(Integer id, Integer pageNum, Integer pageSize);
+//    PageInfo<Article> getArticleVoByUserIdOrderByModifiedTime(Integer pageNum,HttpSession session);
 
     /**
      * 通过文章id删除文章
@@ -44,10 +42,9 @@ public interface ArticleService {
     /**
      * 获取所有文章根据修改时间
      * @param pageNum
-     * @param pageSize
      * @return
      */
-    PageInfo<ArticleVo> getArticleVoOrderByModifiedTime(Integer pageNum, Integer pageSize);
+    PageInfo<ArticleVo> getArticleVoOrderByModifiedTime(Integer pageNum);
 
     /**
      * 获取视图层文章类根据文章id

@@ -37,61 +37,60 @@
                         </h4>
                     </div>
                     <div class="col-md-12">
-                        <form method="post" th:action="@{/_admin/do/setting/update}"
-                              role="form" novalidate="novalidate">
+                        <form role="form" novalidate="novalidate">
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>网站标题</label>
-                                <input type="text" class="form-control"  name="title"
-                                       required="required" th:value="${session.setting.title}"
+                                <input type="text" id="title" class="form-control"  name="title"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>主页标题</label>
-                                <input type="text" class="form-control"  name="indexTitle"
-                                       required="required" th:value="${session.setting.indexTitle}"
+                                <input type="text" id="indexTitle" class="form-control"  name="indexTitle"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>主页标语</label>
-                                <input type="text" class="form-control"  name="indexContent"
-                                       required="required" th:value="${session.setting.indexContent}"
+                                <input type="text" id="indexContent" class="form-control"  name="indexContent"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>博客标题</label>
-                                <input type="text" class="form-control"  name="blogTitle"
-                                       required="required" th:value="${session.setting.blogTitle}"
+                                <input type="text" id="blogTitle" class="form-control"  name="blogTitle"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>博客标语</label>
-                                <input type="text" class="form-control"  name="blogContent"
-                                       required="required" th:value="${session.setting.blogContent}"
+                                <input type="text" id="blogContent" class="form-control"  name="blogContent"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>尾部信息（可以使用html）</label>
-                                <input type="text" class="form-control"  name="footer"
-                                       required="required" th:value="${session.setting.footer}"
+                                <input type="text" id="footer" class="form-control"  name="footer"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
                             <div class="form-group col-md-6" style="padding: 0 10px 0 0;">
                                 <label>网站备案号</label>
-                                <input type="text" class="form-control"  name="record"
-                                       required="required" th:value="${session.setting.record}"
+                                <input type="text" id="record" class="form-control"  name="record"
+                                       required="required"
                                        aria-required="true"/>
                             </div>
                             <div class="clearfix"></div>
 
 
                             <div class="text-right">
-                                <button type="submit"  class="btn btn-primary waves-effect waves-light">
+                                <button id="submitBtn" type="button"  class="btn btn-primary waves-effect waves-light">
                                     提交保存
                                 </button>
                             </div>
@@ -116,4 +115,50 @@
 <script th:src="@{//cdn.bootcss.com/jquery-toggles/2.0.4/toggles.min.js}"></script>
 <!--<script th:src="@{/_admin/js/article.js}"></script>-->
 </body>
+<script type="text/javascript">
+    $(function (){
+        getSettingData();
+    })
+    $("#submitBtn").click(function (){
+        var setting = {
+            "indexTitle": $("#indexTitle").val(),
+            "indexContent": $("#indexContent").val(),
+            "blogTitle": $("#blogTitle").val(),
+            "blogContent": $("#blogContent").val(),
+            "footer": $("#footer").val(),
+            "record": $("#record").val(),
+            "title": $("#title").val()
+        };
+        console.log(setting);
+        console.log(JSON.stringify(setting));
+
+        $.ajax({
+           type: "POST",
+           url: "/_admin/do/setting/update",
+            contentType: "application/json;charset=UTF-8",
+           data: JSON.stringify(setting),
+            success: function (response) {
+               alert(response.message);
+               getSettingData();
+            }
+        });
+
+    });
+    function getSettingData() {
+        $.ajax({
+            type: "GET",
+            url: "/_admin/get/data/setting",
+            dataType: "json",
+            success: function (response) {
+                $("#indexTitle").val(response.data.indexTitle);
+                $("#indexContent").val(response.data.indexContent);
+                $("#blogTitle").val(response.data.blogTitle);
+                $("#blogContent").val(response.data.blogContent);
+                $("#footer").val(response.data.footer);
+                $("#record").val(response.data.record);
+                $("#title").val(response.data.title);
+            }
+        })
+    }
+</script>
 </html>

@@ -3,6 +3,7 @@ package cn.lin1874.blog.service.impl;
 import cn.lin1874.blog.mapper.CategoriesMapper;
 import cn.lin1874.blog.po.Categories;
 import cn.lin1874.blog.service.CategoriesService;
+import cn.lin1874.blog.utils.ResultEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,17 @@ public class CategoriesServiceImpl implements CategoriesService {
     @Override
     public Categories getCategoriesById(Integer id) {
         return categoriesMapper.getCategoriesById(id);
+    }
+
+    @Override
+    public ResultEntity saveCategory(Categories categories) {
+        if (categories.getId() == null) {
+            addCategories(categories);
+            return new ResultEntity(ResultEntity.SUCCESS,"添加成功",null);
+        } else {
+            updateCategories(categories);
+            return new ResultEntity(ResultEntity.SUCCESS,"更新成功",null);
+        }
     }
 
 

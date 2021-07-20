@@ -1,71 +1,58 @@
 package cn.lin1874.blog.utils;
 
 /**
+ * 用于统一项目中所有 Ajax 请求的返回值类型
  * @author lin1874
  * @date 2021/7/17 - 22:06
  */
-/**
- * 用于统一项目中所有 Ajax 请求的返回值类型
- */
+
 public class ResultEntity<T> {
-    public static final String SUCCESS = "SUCCESS";
-    public static final String FAILED = "FAILED";
-    public static final String NO_MESSAGE = "NO_MESSAGE";
-    public static final String NO_DATA = "NO_DATA";
-    /**
-     *  返回操作结果为成功，不带数据
-     *   @return
-     */
-    public static <E> ResultEntity<E> successWithoutData() {
-        return new ResultEntity<E>(SUCCESS, NO_MESSAGE, null);
-    }
-    /**
-     *  返回操作结果为成功，携带数据
-     *  @param data
-     *  @return
-     */
-    public static <E> ResultEntity<E> successWithData(E data) {
-        return new ResultEntity<E>(SUCCESS, NO_MESSAGE, data);
-    }
-    /**
-     *  返回操作结果为失败，不带数据
-     *  @param message
-     *  @return
-     */
-    public static <E> ResultEntity<E> failed(String message) {
-        return new ResultEntity<E>(FAILED, message, null);
-    }
-    private String operationResult;
-    private String operationMessage;
-    private T queryData;
+
+    public static final Integer SUCCESS = 100;
+    public static final Integer FAILED = 200;
+
+    private Integer result;
+    private String message;
+    private T data;
+
     public ResultEntity() {
     }
-    public ResultEntity(String operationResult, String operationMessage, T queryData) {
+    public ResultEntity(Integer result, String message, T data) {
         super();
-        this.operationResult = operationResult;
-        this.operationMessage = operationMessage;
-        this.queryData = queryData;
+        this.result = result;
+        this.message = message;
+        this.data = data;
+    }
+
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
     @Override
     public String toString() {
-        return "AjaxResultEntity [operationResult=" + operationResult + ", operationMessage=" + operationMessage + ", queryData=" + queryData + "]";
-    }
-    public String getOperationResult() {
-        return operationResult;
-    }
-    public void setOperationResult(String operationResult) {
-        this.operationResult = operationResult;
-    }
-    public String getOperationMessage() {
-        return operationMessage;
-    }
-    public void setOperationMessage(String operationMessage) {
-        this.operationMessage = operationMessage;
-    }
-    public T getQueryData() {
-        return queryData;
-    }
-    public void setQueryData(T queryData) {
-        this.queryData = queryData;
+        return "ResultEntity{" +
+                "result='" + result + '\'' +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

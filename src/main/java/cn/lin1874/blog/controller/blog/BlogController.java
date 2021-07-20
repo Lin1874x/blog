@@ -30,22 +30,35 @@ public class BlogController {
     @Autowired
     LinksService linksService;
 
+    /**
+     * 转发到关于页
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/about")
     public String toAboutPage(Model model) {
         model.addAttribute("text", About.text);
         return "site/about";
     }
+
+    /**
+     * 转发到友链
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/links")
     public String toLinksPage(Model model) {
         List<Links> links = linksService.getAllLinks();
         model.addAttribute("links",links);
         return "site/links";
     }
-    @GetMapping("/blog/tags")
-    public String toTagsPage() {
-        return "site/tags";
-    }
 
+    /**
+     * 具体分类文章汇总页面
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/categories/{id}")
     public String toArticleList(@PathVariable("id") Integer id,
                                 Model model) {
@@ -56,27 +69,42 @@ public class BlogController {
         return "site/article-list";
     }
 
-
+    /**
+     * 分类列表
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/categories")
     public String toCategoriesPage(Model model) {
         List<Categories> categories = categoriesService.getAllCategories();
         model.addAttribute("categories",categories);
         return "site/categories";
     }
+
+    /**
+     * 归档页
+     * @param pageNum
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/archives")
     public String toArchivesPage(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
                                  Model model) {
-        PageInfo<ArticleVo> pageInfo = articleService.getArticleVoOrderByModifiedTime(pageNum, pageSize);
+        PageInfo<ArticleVo> pageInfo = articleService.getArticleVoOrderByModifiedTime(pageNum);
         model.addAttribute("pageInfo",pageInfo);
         return "site/archives";
     }
 
+    /**
+     * 博客页面
+     * @param pageNum
+     * @param model
+     * @return
+     */
     @RequestMapping("/blog")
     public String toBlogIndexPage(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                  @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                   Model model) {
-        PageInfo<ArticleVo> pageInfo = articleService.getArticleVoOrderByModifiedTime(pageNum, pageSize);
+        PageInfo<ArticleVo> pageInfo = articleService.getArticleVoOrderByModifiedTime(pageNum);
         List<ArticleVo> list = pageInfo.getList();
         for (ArticleVo articleVo : list) {
             if(articleVo.getTitlePic() == null) {
@@ -90,6 +118,12 @@ public class BlogController {
         return "site/blog";
     }
 
+    /**
+     * 具体文章页面
+     * @param articleId
+     * @param model
+     * @return
+     */
     @GetMapping("/blog/article/{articleId}")
     public String toArticlePage(@PathVariable("articleId") Integer articleId,
                                 Model model) {

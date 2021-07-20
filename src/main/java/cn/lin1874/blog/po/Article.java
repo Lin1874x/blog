@@ -17,13 +17,17 @@ public class Article {
     private Integer id;
     private String title;
     private String titlePic;
+
     private Date createdTime;
     private Date modifiedTime;
+
     private String content;
     private Integer authorId;
+
     private String tags;
     private Integer categories;
     private Integer status;// 0 ：草稿 ； 1 ： 发布
     private Integer hits;
+
     private String shortContent;
 }
