@@ -1,5 +1,7 @@
 package cn.lin1874.blog.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,12 +13,27 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ApiModel("设置展示类")
 public class SettingVo {
-    public String indexTitle ;
-    public String indexContent ;
-    public String blogTitle;
-    public String blogContent;
-    public String footer;
-    public String record;
-    public String title;
+    @ApiModelProperty("首页标题")
+    private  String indexTitle;
+
+    @ApiModelProperty("首页标语")
+    private  String indexContent;
+
+    @ApiModelProperty("博客首页标题")
+    private  String blogTitle;
+
+    @ApiModelProperty("博客首页标语")
+    private  String blogContent;
+
+    @ApiModelProperty("页脚信息")
+    private  String footer;
+
+    @ApiModelProperty("备案信息")
+    private  String record;
+
+    @ApiModelProperty("网站标题")
+    private  String title;
+
 }

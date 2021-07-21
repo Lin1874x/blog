@@ -18,26 +18,26 @@ public class SettingServiceImpl implements SettingService {
     Setting setting;
     @Override
     public void updateSetting(SettingVo settingVo) {
-        if (settingVo.title != null) {
-            setting.setTitle(settingVo.title);
+        if (settingVo.getTitle() != null) {
+            setting.setTitle(settingVo.getTitle());
         }
-        if (settingVo.indexTitle != null) {
-            setting.setIndexTitle(settingVo.indexTitle);
+        if (settingVo.getIndexTitle() != null) {
+            setting.setIndexTitle(settingVo.getIndexTitle());
         }
-        if (settingVo.indexContent != null) {
-            setting.setIndexContent(settingVo.indexContent);
+        if (settingVo.getIndexContent() != null) {
+            setting.setIndexContent(settingVo.getIndexContent());
         }
-        if (settingVo.blogTitle != null) {
-            setting.setBlogTitle(settingVo.blogTitle);
+        if (settingVo.getBlogTitle() != null) {
+            setting.setBlogTitle(settingVo.getBlogTitle());
         }
-        if (settingVo.blogContent != null) {
-            setting.setBlogContent(settingVo.blogContent);
+        if (settingVo.getBlogContent() != null) {
+            setting.setBlogContent(settingVo.getBlogContent());
         }
-        if (settingVo.footer != null) {
-            setting.setFooter(settingVo.footer);
+        if (settingVo.getFooter() != null) {
+            setting.setFooter(settingVo.getFooter());
         }
-        if (settingVo.record != null) {
-            setting.setRecord(settingVo.record);
+        if (settingVo.getRecord() != null) {
+            setting.setRecord(settingVo.getRecord());
         }
     }
 }

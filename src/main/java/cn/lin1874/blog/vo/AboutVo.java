@@ -1,5 +1,7 @@
 package cn.lin1874.blog.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ApiModel("关于页展示类")
 public class AboutVo {
+
+    @ApiModelProperty("关于内容")
     String text;
+
 }

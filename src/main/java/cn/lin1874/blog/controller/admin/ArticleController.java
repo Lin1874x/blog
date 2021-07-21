@@ -9,6 +9,8 @@ import cn.lin1874.blog.utils.ResultEntity;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.xpath.internal.operations.Mod;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,52 +24,39 @@ import java.util.List;
  * @author lin1874
  * @date 2021/6/22 - 11:02
  */
+@Api(tags = "博客文章模块")
 @RestController
 public class ArticleController {
 
     @Autowired
     CategoriesService categoriesService;
+
     @Autowired
     ArticleService articleService;
 
-    /**
-     * 文章添加
-     * @param article
-     * @param session
-     * @return
-     */
+
+    @ApiOperation(value = "文章添加")
     @PostMapping("/_admin/do/article/add")
     public ResultEntity addArticle(Article article, HttpSession session) {
         articleService.addArticle(article,session);
         return new ResultEntity(ResultEntity.SUCCESS,"添加成功",null);
     }
 
-    /**
-     * 获取文章列表
-     * @param pageNum
-     * @return
-     */
+
+    @ApiOperation(value = "获取文章列表")
     @GetMapping("/_admin/get/article/list")
     public ResultEntity<PageInfo<ArticleVo>> getArticleList(@RequestParam(value = "pn", defaultValue = "1") Integer pageNum) {
         return new ResultEntity<>(ResultEntity.SUCCESS,null,articleService.getArticleVoOrderByModifiedTime(pageNum));
     }
 
-    /**
-     * 根据文章id获取文章信息
-     * @param id
-     * @return
-     */
+    @ApiOperation(value = "获取文章信息")
     @GetMapping("/_admin/get/articlevo/data")
     public ResultEntity<ArticleVo> getArticleVoById(@RequestParam("id") Integer id) {
         return new ResultEntity<>(ResultEntity.SUCCESS,null,articleService.getArticleVoById(id));
     }
 
 
-    /**
-     * 跟新文章
-     * @param article
-     * @return
-     */
+    @ApiOperation(value = "更新文章信息")
     @PostMapping("/_admin/do/article/update")
     public ResultEntity doArticleUpdate(Article article) {
         articleService.updateArticle(article);
@@ -75,11 +64,7 @@ public class ArticleController {
     }
 
 
-    /**
-     * 文章删除
-     * @param id
-     * @return
-     */
+    @ApiOperation(value = "删除文章")
     @GetMapping("/_admin/do/article/delete")
     public ResultEntity doArticleDelete(@RequestParam("id") Integer id) {
         articleService.deleteArticleById(id);

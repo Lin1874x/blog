@@ -1,6 +1,9 @@
 package cn.lin1874.blog.vo;
 
 import cn.lin1874.blog.po.Article;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,17 +17,15 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ApiModel("文章展示类")
 public class ArticleVo extends Article {
-    /**
-     * 作者名字
-     */
+
+    @ApiModelProperty("作者昵称")
     private String author;
-    /**
-     * 标签列表
-     */
+
+    @ApiModelProperty("标签列表")
     private String[] taglist;
-    /**
-     * 目录名字
-     */
+
+    @ApiModelProperty("分类名称")
     private String category;
 }

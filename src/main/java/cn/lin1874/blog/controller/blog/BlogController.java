@@ -10,6 +10,8 @@ import cn.lin1874.blog.service.LinksService;
 import cn.lin1874.blog.utils.ResultEntity;
 import cn.lin1874.blog.vo.ArticleVo;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,8 +25,10 @@ import java.util.Map;
  * @author lin1874
  * @date 2021/6/24 - 8:32
  */
+@Api(tags = "博客前端模块")
 @RestController
 public class BlogController {
+
     @Autowired
     ArticleService articleService;
 
@@ -34,79 +38,48 @@ public class BlogController {
     @Autowired
     LinksService linksService;
 
-    /**
-     * 博客首页数据获取
-     * @param pageNum
-     * @return
-     */
+
+    @ApiOperation(value = "获取文章首页数据")
     @GetMapping("/blog/get/data")
     public ResultEntity<PageInfo<ArticleVo>> getBlogIndexData(@RequestParam(value = "pn", defaultValue = "1") Integer pageNum) {
         return new ResultEntity<>(ResultEntity.SUCCESS, null, articleService.getArticleVoOrderByModifiedTime(pageNum));
     }
 
-    /**
-     * 获取关于信息
-     * @return
-     */
+    @ApiOperation(value = "获取关于页数据")
     @GetMapping("/blog/about/get/data")
     public ResultEntity<String> getAboutData() {
         return new ResultEntity<>(ResultEntity.SUCCESS,null,About.text);
     }
 
-    /**
-     * 获取友链信息
-     * @return
-     */
+    @ApiOperation(value = "获取友链列表数据")
     @GetMapping("/blog/links/get/data")
-    @ResponseBody
     public ResultEntity<List<Links>> toLinksPage() {
         List<Links> links = linksService.getAllLinks();
         return new ResultEntity<>(ResultEntity.SUCCESS,null,links);
     }
 
-    /**
-     * 具体分类文章汇总页面
-     * @param id
-     * @return
-     */
+    @ApiOperation(value = "获取具体分类问文章列表数据")
     @GetMapping("/blog/categories/list/get/data")
-    @ResponseBody
     public ResultEntity<Map<String,Object>> toArticleList(@RequestParam("id") Integer id) {
         return new ResultEntity<>(ResultEntity.SUCCESS,null,articleService.getArticleByCategoriesId(id));
     }
 
-    /**
-     * 分类列表
-     * @param model
-     * @return
-     */
+    @ApiOperation(value = "获取分类列表数据")
     @GetMapping("/blog/categories/get/data")
-    @ResponseBody
     public ResultEntity<List<Categories>> toCategoriesPage(Model model) {
         List<Categories> categories = categoriesService.getAllCategories();
         return new ResultEntity<>(ResultEntity.SUCCESS,null,categories);
     }
 
-    /**
-     * 归档页数据获取
-     * @param pageNum
-     * @return
-     */
+    @ApiOperation(value = "获取归档页数据")
     @GetMapping("/blog/archives/get/data")
-    @ResponseBody
     public ResultEntity<PageInfo<ArticleVo>> toArchivesPage(@RequestParam(value = "pn", defaultValue = "1") Integer pageNum) {
         PageInfo<ArticleVo> pageInfo = articleService.getArticleVoOrderByModifiedTime(pageNum);
         return new ResultEntity<>(ResultEntity.SUCCESS,null,pageInfo);
     }
 
-
-    /**
-     * 具体文章页面
-     * @param articleId
-     * @return
-     */
+    @ApiOperation(value = "获取具体文章数据")
     @GetMapping("/blog/article/get/data")
-    @ResponseBody
     public ResultEntity<ArticleVo> toArticlePage(@RequestParam("id") Integer articleId) {
         ArticleVo article = articleService.getArticleVoById(articleId);
         return new ResultEntity<>(ResultEntity.SUCCESS,null,article);
