@@ -9,13 +9,79 @@
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h4 class="page-title">仪表盘</h4>
+                        <h4 class="page-title">后台登录日志</h4>
                     </div>
 
 
 
                     <div class="row">
-                        <span>这里是小林的个人博客后台</span>
+                        <table class="table table-striped" style="width: 600px">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>ip</th>
+                                    <th>时间</th>
+                                    <th>描述</th>
+                                    <th>结果</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+
+                            </tbody>
+                            <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+                            <script>
+                                function Format(datetime,fmt) {
+                                    if (parseInt(datetime)==datetime) {
+                                        if (datetime.length==10) {
+                                            datetime=parseInt(datetime)*1000;
+                                        } else if(datetime.length==13) {
+                                            datetime=parseInt(datetime);
+                                        }
+                                    }
+                                    datetime=new Date(datetime);
+                                    var o = {
+                                        "M+" : datetime.getMonth()+1,                 //月份
+                                        "d+" : datetime.getDate(),                    //日
+                                        "h+" : datetime.getHours(),                   //小时
+                                        "m+" : datetime.getMinutes(),                 //分
+                                        "s+" : datetime.getSeconds(),                 //秒
+                                        "q+" : Math.floor((datetime.getMonth()+3)/3), //季度
+                                        "S"  : datetime.getMilliseconds()             //毫秒
+                                    };
+                                    if(/(y+)/.test(fmt))
+                                        fmt=fmt.replace(RegExp.$1, (datetime.getFullYear()+"").substr(4 - RegExp.$1.length));
+                                    for(var k in o)
+                                        if(new RegExp("("+ k +")").test(fmt))
+                                            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+                                    return fmt;
+                                }
+                                $(function () {
+                                    $.ajax({
+                                        type: "GET",
+                                        url: "/_admin/get/LoginLog",
+                                        success: function (response) {
+                                            if (response.result == 100) {
+                                                var data = response.data;
+                                                $.each(data,function (index,item){
+                                                    $("<tr></tr>").append($("<td></td>").text(index + 1))
+                                                        .append($("<td></td>").text(item.ip))
+                                                        .append($("<td></td>").text(Format(item.operTime,'yyyy-MM-dd hh:mm:ss')))
+                                                        .append($("<td></td>").text(item.operDesc))
+                                                        .append($("<td></td>").text(item.operResult))
+                                                        .appendTo($("#tbody"));
+                                                })
+
+
+
+                                            } else {
+                                                console.log("日志获取失败");
+                                            }
+                                        }
+                                    })
+                                })
+                            </script>
+                        </table>
+
                     </div>
                 </div>
                 <div th:replace="_admin/footer :: footer-content"></div>

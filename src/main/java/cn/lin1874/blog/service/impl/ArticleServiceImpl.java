@@ -15,10 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author lin1874
@@ -67,14 +69,24 @@ public class ArticleServiceImpl implements ArticleService {
         PageInfo<ArticleVo> pageInfo = new PageInfo<>(articles,5);
 
         List<ArticleVo> list = pageInfo.getList();
-        for (ArticleVo articleVo : list) {
+        String defaultImgUrl = "/site/images/cover.png";
+
+        list.stream().forEach((articleVo)->{
             if(articleVo.getTitlePic() == null) {
-                articleVo.setTitlePic("/site/images/cover.png");
+                articleVo.setTitlePic(defaultImgUrl);
             }
             String tags = articleVo.getTags();
             String[] split = tags.split(",");
             articleVo.setTaglist(split);
-        }
+        });
+//        for (ArticleVo articleVo : list) {
+//            if(articleVo.getTitlePic() == null) {
+//                articleVo.setTitlePic("/site/images/cover.png");
+//            }
+//            String tags = articleVo.getTags();
+//            String[] split = tags.split(",");
+//            articleVo.setTaglist(split);
+//        }
 
         return pageInfo;
     }

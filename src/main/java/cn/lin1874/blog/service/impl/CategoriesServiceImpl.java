@@ -29,11 +29,7 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public Integer updateCategories(Categories categories) {
-//        try {
-            return categoriesMapper.updateCategories(categories);
-//        } catch (Exception e) {
-//            throw new Exception("分类名已存在");
-//        }
+        return categoriesMapper.updateCategories(categories);
     }
 
     @Override

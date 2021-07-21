@@ -49,6 +49,7 @@ public class MyWebConfig implements WebMvcConfigurer {
         registry.addViewController("/_admin/to/category").setViewName("_admin/category");
         //后台主页页面
         registry.addViewController("/_admin/index").setViewName("_admin/index");
+        registry.addViewController("/_admin").setViewName("_admin/index");
         //后台登录页面
         registry.addViewController("/_admin/login").setViewName("_admin/login");
         //友链管理页面

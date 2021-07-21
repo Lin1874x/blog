@@ -20,11 +20,6 @@ public interface ArticleService {
      */
     Integer addArticle(Article article,HttpSession session);
 
-    /**
-     * 通过用户id查询文章且根据修改时间排序
-     * @return
-     */
-//    PageInfo<Article> getArticleVoByUserIdOrderByModifiedTime(Integer pageNum,HttpSession session);
 
     /**
      * 通过文章id删除文章

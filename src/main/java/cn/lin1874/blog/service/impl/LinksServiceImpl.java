@@ -23,11 +23,16 @@ public class LinksServiceImpl implements LinksService {
     @Override
     public List<Links> getAllLinks() {
         List<Links> links = linksMapper.getAllLinks();
-        for (Links link : links) {
+        links.stream().forEach((link) -> {
             if (link.getPic() == null || link.getPic().equals("")) {
                 link.setPic("/site/assets/default-avatar.png");
             }
-        }
+        });
+//        for (Links link : links) {
+//            if (link.getPic() == null || link.getPic().equals("")) {
+//                link.setPic("/site/assets/default-avatar.png");
+//            }
+//        }
         return links;
     }
 
